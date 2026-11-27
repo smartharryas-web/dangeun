@@ -20,11 +20,11 @@ function Notifications() {
     load()
   }, [])
 
-  if (items === null) return <p>불러오는 중...</p>
+  if (items === null) return <p className="state">알림을 불러오는 중입니다.</p>
 
   return (
     <div style={{ maxWidth: 640 }}>
-      <h2 className="h4 mb-3">알림</h2>
+      <h1 className="page-title">알림</h1>
       {items.length === 0 ? (
         <p>아직 알림이 없습니다.</p>
       ) : (

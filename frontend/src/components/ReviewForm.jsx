@@ -23,7 +23,7 @@ function ReviewForm({ productId, onDone }) {
   }
 
   return (
-    <form className="p-3 mb-3 rounded" style={{ background: 'var(--color-surface)' }} onSubmit={submit}>
+    <form className="panel p-3 mb-3" onSubmit={submit}>
       <div className="fw-semibold mb-2">거래는 어떠셨나요?</div>
       <div className="mb-2">
         {[1, 2, 3, 4, 5].map((n) => (

@@ -15,7 +15,7 @@ function SimilarProducts({ productId }) {
 
   return (
     <div className="mb-4">
-      <div className="fw-semibold mb-2">비슷한 상품</div>
+      <h2 className="section-title">비슷한 상품</h2>
       <div className="d-flex gap-3 overflow-auto pb-2">
         {products.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="product flex-shrink-0" style={{ width: 120 }}>

@@ -68,12 +68,12 @@ function ChatRoom() {
   }
 
   if (errorMessage) return <p>{errorMessage}</p>
-  if (!room || !user) return <p>불러오는 중...</p>
+  if (!room || !user) return <p className="state">채팅을 불러오는 중입니다.</p>
 
   return (
     <div style={{ maxWidth: 640 }}>
       {/* 위쪽: 어떤 상품 · 누구와 */}
-      <Link to={`/product/${room.product_id}`} className="product d-flex gap-3 align-items-center p-2 mb-3 rounded" style={{ background: 'var(--color-surface)' }}>
+      <Link to={`/product/${room.product_id}`} className="product panel d-flex gap-3 align-items-center p-2 mb-3">
         <img src={imageSrc(room.product_image_url)} alt="" width="56" height="56" style={{ objectFit: 'cover' }} />
         <div>
           <div className="fw-semibold">{room.product_title}</div>

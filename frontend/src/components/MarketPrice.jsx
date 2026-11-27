@@ -13,7 +13,7 @@ function MarketPrice({ productId }) {
   if (!market || !market.category) return null
 
   return (
-    <div className="p-3 mb-4 rounded" style={{ background: 'var(--color-surface)' }}>
+    <div className="panel p-3 mb-4">
       <div className="fw-semibold mb-1">{market.category} 시세</div>
       {market.count === 0 ? (
         <div className="small" style={{ color: 'var(--color-text-sub)' }}>아직 이 카테고리에서 거래된 기록이 없어요.</div>

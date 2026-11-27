@@ -195,7 +195,7 @@ function ProductForm({ values, onChange, images, setImages }) {
       <input className="form-control mb-3" {...field('location')} />
 
       {/* 거래 안내 */}
-      <div className="small p-3 mb-3 rounded" style={{ background: 'var(--color-surface)' }}>
+      <div className="panel small p-3 mb-3">
         <div>· 카카오톡 · 문자 등 외부 채널로 거래를 유도하는 글은 삭제될 수 있어요.</div>
         <details>
           <summary>· 거래 금지 품목 보기</summary>

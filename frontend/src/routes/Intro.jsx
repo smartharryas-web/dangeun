@@ -18,35 +18,39 @@ function Intro() {
       {/* 배경: 백화점 항공샷, 시간대마다 다른 사진 (public/, 개인 프로젝트용) */}
       <img src={pickPhoto()} alt="" className="intro-bg" />
       <div className="intro-logo">
-        {/* ENCORE 로고 (design/logo/시안-1.html): 글자를 폰트 대신 도형(path)으로 직접 그림 */}
+        {/* ENCORE 로고 (design/logo/시안-18.html, CO 맞물림): 글자를 폰트 대신 도형(path)으로 직접 그림 */}
         {/* viewBox = 그림판 크기, 글자마다 translate(x)로 옆으로 밀어 배치 */}
-        {/* 색은 currentColor → .intro의 글자색을 그대로 따라감 */}
-        {/* stroke = 도형 테두리에 선을 덧그려 획을 굵게 (굵기는 strokeWidth) */}
-        {/* 글자마다 g로 감싸고 --o(얼마나 멀리서 출발) · --fd(언제 나타나기 시작)를 따로 줌 → 움직임은 design.css */}
-        <svg viewBox="-3 -4 549 108" role="img" aria-label="ENCORE" fill="currentColor" stroke="currentColor" strokeWidth="4">
+        {/* 색은 currentColor → .intro의 글자색(흰색)을 그대로 따라감 */}
+        {/* 획 굵히기(stroke)는 안 씀: 쓰면 C · O가 겹치는 앞뒤 틈이 메워져 고리처럼 안 보임 */}
+        {/* ENC는 왼쪽(--o 음수), ORE는 오른쪽(--o 양수)에서 다가옴, --fd = 나타나기 시작하는 때 → 움직임은 design.css */}
+        <svg viewBox="-2 -2 518 104" role="img" aria-label="ENCORE" fill="currentColor">
           {/* E */}
-          <g className="intro-letter" style={{ '--o': '-180px', '--fd': '0.45s' }}>
-            <path d="M0 0H57V13H15V43H53V56H15V87H59V100H0Z" />
+          <g className="intro-letter" style={{ '--o': '-56px', '--fd': '0.4s' }}>
+            <path d="M0 0H52V11H13V44.5H47V55.5H13V89H54V100H0Z" />
           </g>
           {/* N */}
-          <g className="intro-letter" style={{ '--o': '-108px', '--fd': '0.3s' }}>
-            <path transform="translate(83)" d="M0 0H19L60 74.55V0H74V100H55L14 25.45V100H0Z" />
+          <g className="intro-letter" style={{ '--o': '-56px', '--fd': '0.25s' }}>
+            <path transform="translate(84)" d="M0 0H17L53.5 73.5V0H66V100H49L12.5 26.5V100H0Z" />
           </g>
-          {/* C */}
-          <g className="intro-letter" style={{ '--o': '-36px', '--fd': '0.15s' }}>
-            <path transform="translate(180)" d="M84 18.18A47 51.6 0 1 0 84 81.82H64.27A30.5 38.6 0 1 1 64.27 18.18Z" />
+          {/* C: 본체 + O 안쪽으로 다시 나오는 아래 끝, 두 조각 */}
+          <g className="intro-letter" style={{ '--o': '-56px', '--fd': '0.1s' }}>
+            <path d="M272.68 38A48 51.5 0 1 0 252.39 93.02A52.5 56 0 0 1 244.35 84.09A34 40.5 0 1 1 258.47 38Z" />
+            <path d="M266.73 77.26A48 51.5 0 0 0 272.68 62H258.47L258.34 62.51A29.5 36 0 0 0 266.73 77.26Z" />
+            {/* 틈 메우개: 다가오는 동안엔 온전한 C로 보이게, 맞물리는 순간 사라짐 */}
+            <path className="intro-gap" d="M251.88 93.37A48 51.5 0 0 0 267.04 76.71A28.9 35.4 0 0 1 258.63 61.37A34 40.5 0 0 1 243.87 84.45A53.1 56.6 0 0 0 251.88 93.37Z" />
           </g>
-          {/* O: 바깥 원 - 안쪽 원 (evenodd = 겹친 안쪽은 비워 둠) */}
-          <g className="intro-letter" style={{ '--o': '36px', '--fd': '0.15s' }}>
-            <path transform="translate(279)" fillRule="evenodd" d="M49 -1.6A49 51.6 0 1 1 49 101.6A49 51.6 0 1 1 49 -1.6ZM49 11.4A32.5 38.6 0 1 0 49 88.6A32.5 38.6 0 1 0 49 11.4Z" />
+          {/* O: C 팔이 앞을 지나는 왼쪽 위만 틈까지 잘라 낸 모양 */}
+          <g className="intro-letter" style={{ '--o': '56px', '--fd': '0.1s' }}>
+            <path d="M245.27 22.74A48 51.5 0 1 0 259.61 6.98A52.5 56 0 0 1 267.65 15.91A34 40.5 0 1 1 253.66 37.49A29.5 36 0 0 0 245.27 22.74Z" />
+            <path className="intro-gap" d="M244.96 23.29A48 51.5 0 0 1 260.12 6.63A53.1 56.6 0 0 1 268.13 15.55A34 40.5 0 0 0 253.37 38.63A28.9 35.4 0 0 0 244.96 23.29Z" />
           </g>
           {/* R */}
-          <g className="intro-letter" style={{ '--o': '108px', '--fd': '0.3s' }}>
-            <path transform="translate(400)" fillRule="evenodd" d="M0 0H34A28 28 0 0 1 47.62 52.45L66 100H48.5L31.5 56H15V100H0ZM15 13H34A12 15 0 0 1 34 43H15Z" />
+          <g className="intro-letter" style={{ '--o': '56px', '--fd': '0.25s' }}>
+            <path transform="translate(362)" fillRule="evenodd" d="M0 0H34A28 28 0 0 1 44.98 53.76L66 100H51L31 56H13V100H0ZM13 11H34A14 17 0 0 1 34 45H13Z" />
           </g>
           {/* 마지막 E: 첫 E와 같은 모양 */}
-          <g className="intro-letter" style={{ '--o': '180px', '--fd': '0.45s' }}>
-            <path transform="translate(484)" d="M0 0H57V13H15V43H53V56H15V87H59V100H0Z" />
+          <g className="intro-letter" style={{ '--o': '56px', '--fd': '0.4s' }}>
+            <path transform="translate(460)" d="M0 0H52V11H13V44.5H47V55.5H13V89H54V100H0Z" />
           </g>
         </svg>
       </div>

@@ -58,7 +58,7 @@ function OfferBox({ product, isMine, onProductChange }) {
   if (isMine) {
     if (offers.length === 0) return null
     return (
-      <div className="p-3 mb-3 rounded" style={{ background: 'var(--color-surface)' }}>
+      <div className="panel p-3 mb-3">
         <div className="fw-semibold mb-2">받은 가격 제안</div>
         {offers.map((o) => (
           <div key={o.id} className="d-flex align-items-center gap-2 mb-1 small">
@@ -83,7 +83,7 @@ function OfferBox({ product, isMine, onProductChange }) {
   if (!product.negotiable || product.status !== '판매중') return null
 
   return (
-    <div className="p-3 mb-3 rounded" style={{ background: 'var(--color-surface)' }}>
+    <div className="panel p-3 mb-3">
       <form className="d-flex gap-2 align-items-center" onSubmit={sendOffer}>
         <input
           className="form-control form-control-sm"

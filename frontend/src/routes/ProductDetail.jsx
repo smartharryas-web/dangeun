@@ -12,6 +12,7 @@ import ReviewForm from '../components/ReviewForm.jsx'
 import ReportButton from '../components/ReportButton.jsx'
 import SellerControls from '../components/SellerControls.jsx'
 import { formatPrice, timeAgo } from '../format.js'
+import { statusClass } from '../components/Product.jsx'
 import { addRecent, removeRecent } from '../recent.js'
 
 // 서버가 준 시간 글자(2026-11-27T14:30:00)를 "11/27 14:30" 모양으로 바꾼다
@@ -67,9 +68,14 @@ function ProductDetail() {
     loadComments()
   }, [id])
 
-  if (errorMessage) return <p>{errorMessage}</p>
+  if (errorMessage) return (
+    <div className="state" role="alert">
+      <p>{errorMessage}</p>
+      <Link className="btn btn-sm btn-outline-secondary" to="/">상품 목록으로</Link>
+    </div>
+  )
 
-  if (!product) return <p>불러오는 중...</p>
+  if (!product) return <p className="state">상품을 불러오는 중입니다.</p>
 
   const isMine = user && user.id === product.seller_id
 
@@ -138,93 +144,25 @@ function ProductDetail() {
 
   return (
     <div>
-    <div className="d-flex flex-wrap gap-4 mb-4">
-      <div className="flex-shrink-0" style={{ maxWidth: '100%' }}>
+    {/* 사진 · 정보 · 댓글 세 덩어리. 어디에 놓일지는 design.css의 .detail (폰: 한 줄씩 / 넓은 화면: 왼쪽 사진+댓글, 오른쪽 정보) */}
+    <div className="detail mb-5">
+      <div className="detail-media">
         {/* 사진 여러 장 넘겨 보기 (상품이 바뀌면 key로 첫 장부터 다시) */}
         <ImageGallery key={product.id} images={product.images} alt={product.title} />
-        <h5 className="mt-3">댓글</h5>
-        {/* 댓글 쓰기 칸은 로그인한 사람만 (댓글 목록은 누구나 봄) */}
-        {user && (
-          <div className="d-flex gap-2">
-            <input
-              className="form-control"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-            />
-            <button className="btn btn-outline-secondary" onClick={submitComment}>
-              제출
-            </button>
-            {editCommentId !== null && (
-              <button
-                className="btn btn-outline-secondary"
-                onClick={() => {
-                  setEditCommentId(null)
-                  setCommentText('')
-                }}
-              >
-                취소
-              </button>
-            )}
-          </div>
-        )}
-        {comments.map((comment) => (
-          <div key={comment.id}>
-            <strong>{comment.username}</strong> {comment.content}
-            <span className="ms-2">
-              {comment.updated_at ? '수정됨' : formatTime(comment.created_at)}
-            </span>
-            {user && user.id === comment.user_id && (
-              <>
-                <button
-                  className="btn btn-sm btn-outline-secondary ms-2"
-                  onClick={() => {
-                    setEditCommentId(comment.id)
-                    setCommentText(comment.content)
-                  }}
-                >
-                  수정
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger ms-1"
-                  onClick={() => setDeleteCommentId(comment.id)}
-                >
-                  삭제
-                </button>
-              </>
-            )}
-          </div>
-        ))}
-        {deleteCommentId !== null && (
-          <div className="modal d-block" tabIndex="-1">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-body">
-                  <p>정말 삭제할까요?</p>
-                  <button className="btn btn-outline-danger me-2" onClick={deleteComment}>
-                    확인
-                  </button>
-                  <button className="btn btn-outline-secondary" onClick={() => setDeleteCommentId(null)}>
-                    취소
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-      <div className="flex-grow-1" style={{ minWidth: 280 }}>
+      <div className="detail-info">
         {/* 카테고리 경로: 누르면 그 카테고리 목록으로 */}
-        <div className="small mb-1">
-          <Link to="/" className="text-decoration-none" style={{ color: 'var(--color-text-sub)' }}>전체</Link>
+        <nav className="detail-path" aria-label="카테고리 경로">
+          <Link to="/">전체</Link>
           {product.category && (
             <>
-              <span style={{ color: 'var(--color-text-sub)' }}> › </span>
-              <Link to={`/?category=${encodeURIComponent(product.category)}`} className="text-decoration-none">{product.category}</Link>
+              <span aria-hidden="true"> › </span>
+              <Link to={`/?category=${encodeURIComponent(product.category)}`}>{product.category}</Link>
             </>
           )}
-        </div>
-        <div className="d-flex align-items-center gap-2">
-          <h2 className="mb-0">{product.title}</h2>
+        </nav>
+        <div className="d-flex align-items-start gap-2">
+          <h1 className="detail-title flex-grow-1">{product.title}</h1>
           <LikeButton
             productId={product.id}
             liked={product.liked}
@@ -233,28 +171,28 @@ function ProductDetail() {
           />
           {/* 공유하기: 지금 주소를 복사 */}
           <button
-            className="btn btn-sm border-0"
+            className="like-button"
             aria-label="링크 복사"
             onClick={() => navigator.clipboard.writeText(window.location.href).then(() => alert('링크를 복사했어요.'))}
           >
-            <i className="bi bi-share" />
+            <i className="bi bi-share" aria-hidden="true" />
           </button>
         </div>
-        <p className="small mb-2" style={{ color: 'var(--color-text-sub)' }}>
+        <p className="detail-meta">
           {product.location} · {timeAgo(product.created_at)} · 조회 {product.view_count} · 찜 {product.like_count}
         </p>
-        <p className="product-price fs-4">{formatPrice(product.price)}</p>
+        <p className="product-price detail-price">{formatPrice(product.price)}</p>
         <ProductInfo product={product} />
-        <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
+        <p className="detail-description">{product.description}</p>
         {/* 판매 상태: 내 상품이면 상태 바꾸기 · 끌어올리기, 아니면 상태 글자 + 채팅하기 */}
         {isMine ? (
           <SellerControls product={product} onChange={setProduct} />
         ) : (
           <div className="d-flex align-items-center gap-3 mb-3">
-            <span>{product.status}</span>
+            <span className={`product-status ${statusClass[product.status]}`}>{product.status}</span>
             {product.status !== '판매완료' && (
               <button className="btn btn-primary" onClick={openChat}>
-                <i className="bi bi-chat-dots" /> 채팅하기
+                <i className="bi bi-chat-dots" aria-hidden="true" /> 채팅하기
               </button>
             )}
           </div>
@@ -296,6 +234,82 @@ function ProductDetail() {
           </div>
         )}
       </div>
+      <section className="detail-comments">
+        <h2 className="section-title">댓글 {comments.length > 0 && comments.length}</h2>
+        {/* 댓글 쓰기 칸은 로그인한 사람만 (댓글 목록은 누구나 봄) */}
+        {user && (
+          <div className="d-flex gap-2 mb-2">
+            <input
+              className="form-control"
+              aria-label="댓글 쓰기"
+              placeholder="궁금한 점을 남겨 보세요"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button className="btn btn-outline-secondary flex-shrink-0" onClick={submitComment}>
+              제출
+            </button>
+            {editCommentId !== null && (
+              <button
+                className="btn btn-outline-secondary flex-shrink-0"
+                onClick={() => {
+                  setEditCommentId(null)
+                  setCommentText('')
+                }}
+              >
+                취소
+              </button>
+            )}
+          </div>
+        )}
+        {!user && comments.length === 0 && (
+          <p className="small" style={{ color: 'var(--color-text-sub)' }}>아직 댓글이 없습니다. 로그인하면 댓글을 남길 수 있어요.</p>
+        )}
+        {comments.map((comment) => (
+          <div key={comment.id} className="comment">
+            <strong>{comment.username}</strong> {comment.content}
+            <span className="comment-time">
+              {comment.updated_at ? '수정됨' : formatTime(comment.created_at)}
+            </span>
+            {user && user.id === comment.user_id && (
+              <>
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-2"
+                  onClick={() => {
+                    setEditCommentId(comment.id)
+                    setCommentText(comment.content)
+                  }}
+                >
+                  수정
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-danger ms-1"
+                  onClick={() => setDeleteCommentId(comment.id)}
+                >
+                  삭제
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+        {deleteCommentId !== null && (
+          <div className="modal d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-body">
+                  <p>정말 삭제할까요?</p>
+                  <button className="btn btn-outline-danger me-2" onClick={deleteComment}>
+                    확인
+                  </button>
+                  <button className="btn btn-outline-secondary" onClick={() => setDeleteCommentId(null)}>
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
     {/* 아래쪽: 시세 · 비슷한 상품 */}
     <MarketPrice productId={product.id} />

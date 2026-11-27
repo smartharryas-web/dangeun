@@ -50,12 +50,12 @@ function EditProduct() {
   }
 
   if (errorMessage) return <p>{errorMessage}</p>
-  if (!product || !user || !values) return <p>불러오는 중...</p>
+  if (!product || !user || !values) return <p className="state">상품을 불러오는 중입니다.</p>
   if (user.id !== product.seller_id) return <p>내 상품만 고칠 수 있습니다.</p>
 
   return (
     <div style={{ maxWidth: 720 }}>
-      <h2 className="h4 mb-3">상품 고치기</h2>
+      <h1 className="page-title">상품 고치기</h1>
       <ProductForm values={values} onChange={handleChange} images={images} setImages={setImages} />
       <button className="btn btn-outline-secondary" onClick={() => navigate(`/product/${id}`)}>취소</button>
       <button className="btn btn-primary ms-2" onClick={handleSubmit}>저장</button>

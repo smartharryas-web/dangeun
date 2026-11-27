@@ -50,15 +50,15 @@ function Shop() {
   }
 
   if (errorMessage) return <p>{errorMessage}</p>
-  if (!shop) return <p>불러오는 중...</p>
+  if (!shop) return <p className="state">상점을 불러오는 중입니다.</p>
 
   const isMe = user && user.id === shop.id
 
   return (
     <div>
-      <div className="p-3 mb-3 rounded d-flex align-items-center gap-3" style={{ background: 'var(--color-surface)' }}>
+      <div className="panel p-3 mb-3 d-flex align-items-center gap-3">
         <div className="me-auto">
-          <h2 className="h4 mb-1">{shop.username}님의 상점</h2>
+          <h1 className="page-title mb-1 mt-0">{shop.username}님의 상점</h1>
           <div className="small" style={{ color: 'var(--color-text-sub)' }}>
             판매 중 {shop.selling_count} · 거래 완료 {shop.sold_count} · 팔로워 {shop.follower_count}
             {shop.rating_avg !== null && <> · <i className="bi bi-star-fill" style={{ color: 'var(--color-point)' }} /> {shop.rating_avg} ({shop.review_count})</>}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router'
+import { useSearchParams, Link } from 'react-router'
 import { api } from '../api.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { CATEGORIES, SORTS } from '../constants.js'
@@ -56,10 +56,12 @@ function Home() {
     <div>
       {!q && !category && <RecentProducts />}
 
-      {/* 카테고리 메뉴 (가로로 넘겨 보기) */}
-      <div className="d-flex gap-2 overflow-auto pb-2 mb-3">
+      {/* 카테고리 메뉴 (가로로 넘겨 보기). 모양은 design.css의 .category-tabs */}
+      {/* aria-pressed = 지금 눌려 있는 버튼인지 화면 읽어 주는 프로그램에 알려 줌 */}
+      <nav className="category-tabs" aria-label="카테고리">
         <button
-          className={`btn btn-sm flex-shrink-0 ${category ? 'btn-outline-secondary' : 'btn-dark'}`}
+          className={`category-tab ${category ? '' : 'is-active'}`}
+          aria-pressed={!category}
           onClick={() => setParam('category', '')}
         >
           전체
@@ -67,13 +69,14 @@ function Home() {
         {CATEGORIES.map((c) => (
           <button
             key={c}
-            className={`btn btn-sm flex-shrink-0 ${category === c ? 'btn-dark' : 'btn-outline-secondary'}`}
+            className={`category-tab ${category === c ? 'is-active' : ''}`}
+            aria-pressed={category === c}
             onClick={() => setParam('category', c)}
           >
             {c}
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* 지금 검색어 · 판매완료 빼기 · 정렬 */}
       <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
@@ -95,18 +98,45 @@ function Home() {
           />
           <label className="form-check-label small" htmlFor="exclude_sold">판매완료 빼기</label>
         </div>
-        <select className="form-select form-select-sm w-auto" value={sort} onChange={(e) => setParam('sort', e.target.value)}>
+        <select className="form-select form-select-sm w-auto" aria-label="정렬" value={sort} onChange={(e) => setParam('sort', e.target.value)}>
           {SORTS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
       </div>
 
       {/* 받는 중 · 에러 · 빈 목록 · 목록 넷 중 하나 */}
       {error ? (
-        <p className="text-danger">상품을 불러오지 못했습니다. ({error})</p>
+        // role="alert" = 문제가 생겼다는 걸 화면 읽어 주는 프로그램이 바로 읽어 줌
+        <div className="state" role="alert">
+          <p className="text-danger">상품을 불러오지 못했습니다. ({error})</p>
+          <p>서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</p>
+        </div>
       ) : products === null ? (
-        <p>불러오는 중...</p>
+        // 받는 중: 목록이 들어올 자리를 빈 칸 3개로 미리 그려 둔다 (글자는 화면 읽어 주는 프로그램용)
+        <div aria-busy="true">
+          <span className="visually-hidden">상품을 불러오는 중입니다.</span>
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="skeleton-row" aria-hidden="true">
+              <div className="skeleton-photo" />
+              <div className="flex-grow-1">
+                <div className="skeleton-line" style={{ width: '40%' }} />
+                <div className="skeleton-line" style={{ width: '24%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : products.length === 0 ? (
-        <p>{q || category ? '조건에 맞는 상품이 없습니다.' : '아직 올라온 상품이 없습니다.'}</p>
+        // 빈 목록: 왜 비었는지 + 다음에 할 일 하나
+        q || category || excludeSold ? (
+          <div className="state">
+            <p>조건에 맞는 상품이 없습니다.</p>
+            <button className="btn btn-sm btn-outline-secondary" onClick={() => setParams({})}>조건 모두 지우기</button>
+          </div>
+        ) : (
+          <div className="state">
+            <p>아직 올라온 상품이 없습니다.</p>
+            <Link className="btn btn-sm btn-outline-secondary" to="/new">첫 상품 올리기</Link>
+          </div>
+        )
       ) : (
         products.map((product) => (
           <Product

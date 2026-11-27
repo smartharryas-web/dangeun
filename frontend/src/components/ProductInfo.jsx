@@ -18,11 +18,11 @@ function ProductInfo({ product }) {
       {/* 눈에 띄어야 하는 표시 */}
       <div className="d-flex flex-wrap gap-2 mb-2">
         {product.has_warranty && (
-          <span className="badge rounded-pill" style={{ background: 'var(--color-point)', color: 'var(--color-on-point)' }}>
-            <i className="bi bi-patch-check" /> 판매자 제공 보증서 있음
+          <span className="tag tag-point">
+            <i className="bi bi-patch-check" aria-hidden="true" /> 판매자 제공 보증서 있음
           </span>
         )}
-        {product.negotiable && <span className="badge rounded-pill text-bg-light border">가격 제안 가능</span>}
+        {product.negotiable && <span className="tag">가격 제안 가능</span>}
       </div>
 
       {rows.length > 0 && (
@@ -30,7 +30,7 @@ function ProductInfo({ product }) {
           <tbody>
             {rows.map(([label, value]) => (
               <tr key={label}>
-                <th className="fw-normal" style={{ width: 96, color: 'var(--color-text-sub)' }}>{label}</th>
+                <th scope="row" className="fw-normal" style={{ width: 96, color: 'var(--color-text-sub)' }}>{label}</th>
                 <td>{value}</td>
               </tr>
             ))}
@@ -42,7 +42,7 @@ function ProductInfo({ product }) {
       {product.tags.length > 0 && (
         <div className="d-flex flex-wrap gap-2">
           {product.tags.map((tag) => (
-            <Link key={tag} to={`/?q=${encodeURIComponent(tag)}`} className="small text-decoration-none">#{tag}</Link>
+            <Link key={tag} to={`/?q=${encodeURIComponent(tag)}`} className="tag-link">#{tag}</Link>
           ))}
         </div>
       )}

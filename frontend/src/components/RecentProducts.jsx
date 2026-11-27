@@ -12,7 +12,7 @@ function RecentProducts() {
 
   return (
     <div className="mb-4">
-      <div className="small mb-2" style={{ color: 'var(--color-text-sub)' }}>최근 본 상품</div>
+      <h2 className="section-title">최근 본 상품</h2>
       <div className="d-flex gap-3 overflow-auto pb-2">
         {items.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="product flex-shrink-0" style={{ width: 88 }}>

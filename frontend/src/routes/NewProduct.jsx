@@ -81,7 +81,7 @@ function NewProduct() {
 
   return (
     <div style={{ maxWidth: 720 }}>
-      <h2 className="h4 mb-3">새 상품 올리기</h2>
+      <h1 className="page-title">새 상품 올리기</h1>
       <ProductForm values={values} onChange={handleChange} images={images} setImages={setImages} />
       <button className="btn btn-outline-secondary" onClick={handleTempSave}>임시저장</button>
       <button className="btn btn-primary ms-2" onClick={handleSubmit}>등록하기</button>

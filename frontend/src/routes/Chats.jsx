@@ -13,11 +13,11 @@ function Chats() {
     authApi('/api/chats', {}).then(setRooms).catch((e) => alert(e.message))
   }, [])
 
-  if (rooms === null) return <p>불러오는 중...</p>
+  if (rooms === null) return <p className="state">채팅을 불러오는 중입니다.</p>
 
   return (
     <div style={{ maxWidth: 640 }}>
-      <h2 className="h4 mb-3">채팅</h2>
+      <h1 className="page-title">채팅</h1>
       {rooms.length === 0 ? (
         <p>아직 채팅이 없습니다. 상품 상세에서 "채팅하기"를 눌러 보세요.</p>
       ) : (

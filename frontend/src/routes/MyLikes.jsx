@@ -18,11 +18,11 @@ function MyLikes() {
       : products.filter((p) => p.id !== productId))
   }
 
-  if (products === null) return <p>불러오는 중...</p>
+  if (products === null) return <p className="state">찜한 상품을 불러오는 중입니다.</p>
 
   return (
     <div>
-      <h2 className="h4 mb-3">찜한 상품</h2>
+      <h1 className="page-title">찜한 상품</h1>
       {products.length === 0 ? (
         <p>아직 찜한 상품이 없습니다.</p>
       ) : (

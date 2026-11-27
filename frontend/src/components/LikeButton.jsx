@@ -23,12 +23,12 @@ function LikeButton({ productId, liked, count, onToggle }) {
 
   return (
     <button
-      className="btn btn-sm border-0"
-      style={{ color: 'var(--color-point)' }}
+      className={`like-button ${liked ? 'is-liked' : ''}`}
       onClick={toggle}
-      aria-label={liked ? '찜 빼기' : '찜하기'}
+      aria-label={liked ? `찜 빼기 (찜 ${count})` : `찜하기 (찜 ${count})`}
+      aria-pressed={liked}
     >
-      <i className={liked ? 'bi bi-heart-fill' : 'bi bi-heart'} /> {count}
+      <i className={liked ? 'bi bi-heart-fill' : 'bi bi-heart'} aria-hidden="true" /> {count}
     </button>
   )
 }
