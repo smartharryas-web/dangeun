@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router'
 import Navbar from './components/Navbar.jsx'
 import Home from './routes/Home.jsx'
+import ProductDetail from './routes/ProductDetail.jsx'
 import Login from './routes/Login.jsx'
 import Signup from './routes/Signup.jsx'
 import NewProduct from './routes/NewProduct.jsx'
@@ -17,6 +18,7 @@ function App() {
           <Route element={<RequireLogin />}>
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<NewProduct />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
           </Route>
         </Routes>
       </main>

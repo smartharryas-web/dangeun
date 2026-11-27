@@ -1,0 +1,45 @@
+## 상품 목록
+목표: 첫 화면에 상품들이 사진 · 제목 · 가격 · 판매 상태로 보인다 (SPEC 기능 표)
+지금: 끝 — 남은 다듬기: 가격 쉼표 · 링크 모양 · 판매 상태 딱지 · 불러오는 중 · 빈 목록 · 에러 · 로그인 없이 보기, 진짜 사진은 상품 올리기 때
+
+1. 위치 — 첫 화면(Home)
+2. 위치 — 홈 화면을 따로 두지 않고 `/`에 들어가자마자 상품 목록
+3. 나누기 — 상품 하나를 컴포넌트로
+4. 이름 — Product (소문자 product는 React가 HTML 태그로 봐서 대문자로)
+5. 코드 — components/Product.jsx 새 파일, "상품 하나" 글자만 → Home에서 출력
+6. 확인 — (확인 말 없음)
+7. 출처 — 상품 정보는 Home이 들고 있다가 Product에 props로 넘겨줌 (장단점 비교 후 고름)
+8. 약속 — props는 상품 통째로 하나: `<Product product={상품} />`
+9. 코드 — Home에 가짜 상품 하나(fakeProduct, DB 칸 이름 그대로) → Product가 제목 · 가격 · 판매 상태를 글자로 그림
+10. 확인 — (확인 말 없음)
+11. 순서 — 가짜 상품을 늘리지 않고 바로 진짜 데이터로
+12. 출처 — /docs에서 상품 주소 찾기 → auth 묶음만 있고 상품 주소는 없음을 확인
+  13. 약속 — GET /api/products (insta 글 목록과 같은 방식)
+  14. 약속 — 응답은 상품 목록, 상품마다 id · title · price · image_url · location · status · created_at
+  15. 약속 — 로그인 없이 누구나 받을 수 있음
+  16. 나누기 — auth.py에 붙이지 않고 새 라우터 파일
+  17. 이름 — ProdList (ProductAuth → ProdAdd → ProdList로 바꿈, 상품 주소를 모으는 파일이라는 설명 듣고)
+  18. 코드 — routers/ProdList.py 새 파일(GET /api/products), schemas.py에 ProductOut, main.py에 라우터 연결
+  19. 확인 — GET /api/products가 200, 시드 상품 3개를 돌려줌 (Claude가 직접 요청해서 확인)
+  20. 에러 — /docs에 products가 안 보임: 서버가 팀 저장소 폴더(dangeun)에서 켜져 있었고 코드는 바깥 carrot 폴더에 씀
+  21. 코드 — 작업 폴더를 dangeun으로 옮김: main pull → 심병규 브랜치 → 상품 목록 코드 · 기록 복사 (DB는 두 폴더가 같은 carrot DB라 리비전 · 시드는 이미 적용돼 있음)
+  22. 확인 — dangeun 서버 /docs에 GET /api/products가 뜨고 상품 3개를 돌려줌 (Claude가 직접 요청해서 확인)
+23. 순서 — 커밋은 화면까지 잇고 나서
+24. 출처 — Home에서 useState + useEffect로 api('/api/products') 불러오기, map으로 Product 여러 개 (insta 글 목록과 같은 방식)
+25. 코드 — Home.jsx: 가짜 상품 지우고 진짜 상품 목록을 받아 Product로 그림
+26. 확인 — 첫 화면에 진짜 상품 3개가 보임
+27. 코드 — 커밋 "상품 목록 - db, 서버, 화면 연결" (심병규 브랜치)
+28. 순서 — GitHub에 올리는 건 사진까지 하고 나서
+29. 순서 — 사진보다 먼저 상세 링크 (팀원 요청: 상품 목록 담당은 /product/상품번호로 링크)
+30. 위치 — 상품 칸 전체를 눌러야 상세로 이동
+31. 코드 — Product.jsx를 Link(to=/product/상품번호)로 감쌈
+32. 확인 — 상품을 누르면 주소창이 /product/번호로 바뀜
+33. 코드 — 커밋 "상품 칸 전체를 상세(/product/번호) 링크로" → main 받아 확인 후 심병규 브랜치 push
+34. 코드 — main에 바로 합치기로 정함 → main pull · 심병규 merge · 확인 후 main push, 다시 심병규 브랜치로
+35. 다듬기 — 사진은 글자 왼쪽 (예시 그림 A · B 보고 B를 고름)
+36. 코드 — Product.jsx: d-flex로 사진(img, image_url) 왼쪽 · 글자 오른쪽
+37. 출처 — 사진은 일단 임시: frontend/public/uploads/에 시드 주소와 같은 이름의 사진 파일 (진짜 사진은 상품 올리기 때)
+38. 코드 — public/uploads/에 choco · galaxy · socks.jpg 임시 그림(색 바탕 + 이름) 생성
+39. 확인 — 첫 화면에 상품 3개가 사진(왼쪽) · 제목 · 가격 · 판매 상태로 보임 → 목표 달성
+40. 순서 — 다듬기는 하지 않고 여기서 마무리
+41. 코드 — SPEC.md 기능 표(담당 · 상태) · 주소 표 · 주소 약속에 상품 목록 적음 → 커밋 · main에 합쳐 push
