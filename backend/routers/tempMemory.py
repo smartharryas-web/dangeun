@@ -65,3 +65,28 @@ def save_temp(
   db.commit()
 
   return to_out(temp)
+
+
+@router.get('', response_model=TempMemoryOut)
+def get_temp(db: SessionDep, user: CurrentUserDep):
+  temp = db.scalar(select(TempProduct).where(TempProduct.user_id == user.id))
+
+  if not temp:
+    raise HTTPException(status_code=404, detail='임시저장이 없습니다.')
+
+  return to_out(temp)
+
+
+@router.delete('', status_code=204)
+def delete_temp(db: SessionDep, user: CurrentUserDep):
+  temp = db.scalar(select(TempProduct).where(TempProduct.user_id == user.id))
+
+  if not temp:
+    raise HTTPException(status_code=404, detail='임시저장이 없습니다.')
+
+  # 저장된 사진 파일도 같이 지운다
+  if temp.image_url:
+    (UPLOAD_DIR / Path(temp.image_url).name).unlink(missing_ok=True)
+
+  db.delete(temp)
+  db.commit()

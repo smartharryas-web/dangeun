@@ -25,7 +25,7 @@
 
 ## 상품 올리기 + 사진
 목표: 글쓰기 화면에 이미지 올리는 칸 · 상품명 · 카테고리 선택 · 임시저장 버튼 · 등록하기 버튼이 있고, 올리면 상품이 저장된다 (끝나면 네비게이션 바도 직접 만듦)
-지금: GET /api/tempMemory(불러오기) 만들 차례
+지금: 끝 — 남은 다듬기: 사진 여러 장 저장 · 카테고리 저장 · 사진 미리 보기 지우기 · 네비게이션 바(내가 맡기로 함)
 
 1. 순서 — 역할 분담: 병규 목록 · 상록 상세 · 나 상품 올리기+사진, 찜과 판매 상태 바꾸기는 나중에 → SPEC.md 기능 표 담당에 적음
 2. 순서 — 완성 모습: 이미지 올리는 칸 · 상품명 칸 · 카테고리 선택 · 임시저장 버튼 · 등록하기 버튼, 다 끝나면 네비게이션 바도 직접 구현
@@ -79,3 +79,27 @@
   50. 코드 — tempMemory.py POST가 사진(images)을 받아 첫 번째 한 장을 backend/uploads/temp에 저장하고 image_url에 주소 저장 · main.py에 /uploads 주소로 사진 보여 주기 · .gitignore에 backend/uploads/
   51. 확인 — /docs에서 사진 포함 POST /api/tempMemory가 됨(학생: 확인했어)
   52. 코드 — POST 임시저장 서버(tempMemory.py · schemas.py · main.py CORS 포함 · .gitignore)를 harry에 커밋 · push 후 main에 합침
+  53. 순서 — 남은 일(GET · DELETE · 화면) 중 GET /api/tempMemory(불러오기)부터
+  54. 코드 — tempMemory.py에 GET /api/tempMemory (로그인한 사람의 임시저장, 없으면 404)
+  55. 확인 — /docs에서 GET /api/tempMemory가 됨(학생: 확인)
+  56. 순서 — 지우기 서버(DELETE)부터, 화면 연결은 그다음
+  57. 코드 — tempMemory.py에 DELETE /api/tempMemory (내 임시저장 한 줄 지움, 없으면 404, 성공 204)
+  58. 약속 — 임시저장을 지울 때 서버에 저장된 사진 파일도 같이 지움
+  59. 코드 — DELETE에서 사진 파일(backend/uploads/temp)도 지움 · NewProduct.jsx에 임시저장 버튼 + POST 연결 (이미 있으면 서버 메시지를 alert 팝업으로, 성공하면 "임시저장되었습니다." alert)
+  60. 나누기 — 불러오기 팝업은 브라우저 기본 confirm 창 (학생: confirm 창 사용, 이유 말 없음)
+  61. 코드 — NewProduct.jsx에 /new 들어오면 GET /api/tempMemory → 있으면 confirm "임시저장된 품목이 있습니다. 불러올까요?" → 확인: 칸 채우고 서버 사진을 받아 파일로 만든 뒤 DELETE, 취소: 그대로 (개발용 이중 실행 대비 ignore 표시)
+  62. 확인 — 임시저장 → 불러오기 팝업 흐름 (확인 말 없음)
+  63. 순서 — 등록하기 버튼을 만들고 나서 올리기 (학생: 등록하기 만들고 올리자)
+  64. 출처 — /docs에서 상품 올리는 주소를 찾아봄 → 없음 (학생이 확인)
+  65. 확인 — 등록 요청 칸(images · title · category · price · description · location)을 products 칸과 비교 → category가 products에 없음을 학생이 찾음
+  66. 약속 — 상품 등록 때 category는 저장하지 않음(products에 칸 추가는 나중 추가 기능으로), 임시저장(temp_products)은 category 그대로 저장
+  67. 약속 — 올린 상품 사진 image_url은 /uploads/products/...만 저장, 서버 주소는 화면에서 붙임(팀원 화면 Product.jsx · ProductDetail.jsx 수정 필요)
+  68. 약속 — POST /api/products 초안: 로그인 필요 · 요청 images 1~10장(첫 장만 저장) · title · price · description · location · 응답 201 상품 하나 → SPEC.md 주소 · 주소 약속에 적음
+  69. 코드 — routers/newProduct.py(POST /api/products, 사진은 backend/uploads/products에 저장) 새 파일 · main.py 등록
+  70. 코드 — 임시저장 DELETE · 임시저장 버튼 · 불러오기 팝업 · POST /api/products 서버와 SPEC 약속을 harry에 커밋 후 main 합침
+  71. 약속 — 등록하기를 누르면 상품이 저장되어 메인 페이지(/)에 올라가게
+  72. 코드 — NewProduct.jsx에 등록하기 버튼 + POST /api/products 연결, 성공하면 /로 이동, 실패하면 서버 메시지를 alert
+  73. 다듬기 — 빠진 칸이 있는데 등록하기를 누르면 경고 팝업 (사진 · 상품명 · 가격 · 설명 · 거래 희망 장소가 모두 있어야 함)
+  74. 코드 — handleSubmit 맨 앞에서 빠진 칸이 있으면 alert 경고 후 서버로 보내지 않음
+  75. 확인 — 빠진 칸 경고 · 등록하면 메인에 보임 · DBeaver products 줄 확인됨(학생: 확인 됐어) → main에 합침
+  76. 충돌 — backend/main.py routers import 줄, 내 newProduct와 상록 comments 둘 다 살림 (모든 브랜치 합친 뒤 서버 import · 화면 빌드 통과 · 내 DB에 comments 리비전 적용)
