@@ -47,7 +47,7 @@ uv run python -c "import secrets; print(secrets.token_hex(32))"
 VS Code에서 `backend/.env`를 열어 두 줄을 채우고 저장합니다.
 
 ```
-DB_URL=postgresql+psycopg://sd4:sd4@localhost:5432/carrot
+DB_URL=postgresql+psycopg://sd4:sd4@localhost:5432/dangeun
 SECRET_KEY=위에서_나온_64글자
 ```
 
@@ -59,7 +59,7 @@ psql -U postgres     # Windows
 ```
 
 ```sql
-CREATE DATABASE carrot OWNER sd4;
+CREATE DATABASE dangeun OWNER sd4;
 \q
 ```
 
