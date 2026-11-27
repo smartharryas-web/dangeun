@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
+import { useParams, Link } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 
 function ProductDetail() {
@@ -7,6 +7,7 @@ function ProductDetail() {
   const { user, authApi } = useAuth()
   const [product, setProduct] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -24,6 +25,8 @@ function ProductDetail() {
 
   if (!product) return <p>불러오는 중...</p>
 
+  const isMine = user && user.id === product.seller_id
+
   return (
     <div className="d-flex gap-4">
       <img
@@ -40,7 +43,32 @@ function ProductDetail() {
         <p>{product.description}</p>
         <p>{product.status}</p>
         <p>{product.location}</p>
-        <p>{user && user.id === product.seller_id ? '내가 쓴 글' : `판매자: ${product.seller_username}`}</p>
+        <p>{isMine ? '내가 쓴 글' : `판매자: ${product.seller_username}`}</p>
+        {isMine && (
+          <div>
+            <Link to={`/product/${id}/edit`} className="btn btn-outline-secondary me-2">
+              수정
+            </Link>
+            <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>
+              삭제
+            </button>
+          </div>
+        )}
+        {showConfirm && (
+          <div className="modal d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-body">
+                  <p>정말 삭제할까요?</p>
+                  <button className="btn btn-outline-danger me-2">확인</button>
+                  <button className="btn btn-outline-secondary" onClick={() => setShowConfirm(false)}>
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -9,6 +9,23 @@
 3. 나누기 — products 칸 이름 제안(title · price · description · image_url · status · region · view_count · created_at · updated_at · seller_id)은 일단 넘어감, 표 목록부터
 4. 나누기 — 표 후보: products, likes(찜 저장용) — 학생이 말함
 
+## 내 글 수정 · 삭제
+목표: 상품 상세 화면에서 내 글이면 수정 · 삭제가 나온다
+지금: 확인을 누르면 서버에 삭제를 요청할 주소 정하기
+
+1. 위치 — 상품 상세 화면(ProductDetail.jsx)의 내 글일 때 (학생: 자기 글에는 수정 · 삭제가 나오게)
+2. 순서 — 수정: 누르면 /product/숫자/edit으로 이동, 기존 정보가 상품 올리기 폼에 채워져 보이고 거기에 수정 · 취소 버튼 (상품 올리기 폼은 팀원이 아직 미구현)
+3. 순서 — 삭제: 누르면 정말 삭제할지 묻고(확인 · 취소), 확인이면 삭제 후 Home으로, 취소면 원래 상세로
+4. 순서 — 버튼부터 화면에 보이게(A), 삭제 끝까지(B)는 뒤로
+5. 코드 — ProductDetail.jsx에 isMine 변수, 내 글일 때만 수정(btn-outline-secondary) · 삭제(btn-outline-danger) 버튼(동작 없음)
+6. 순서 — 수정부터, 학생이 직접 코드 작성(Claude는 힌트만)
+7. 약속 — 수정 버튼은 button 대신 Link로 /product/{id}/edit 이동
+8. 에러 — 학생 코드에서 Link를 import하지 않았고 to가 /api/products/{id}로 잘못 적혀 있었음 → import 추가, to를 /product/{id}/edit으로 고침
+9. 확인 — 수정 버튼이 안 보인 건 내 글이 아니어서였음(학생이 확인), 이동 확인 말 없음
+10. 순서 — 이어서 삭제 기능 (확인창 → 서버 삭제 → Home)
+11. 나누기 — 삭제 확인창은 브라우저 기본창(A)이 아니라 Bootstrap 모달(B)을 화면 안에 직접 만들기, 디자인 요소는 최대한 뺌
+12. 코드 — showConfirm state 추가, 삭제 버튼 onClick으로 켜기, modal d-block 안에 "정말 삭제할까요?" + 확인(동작 없음) · 취소(끄기)
+
 ## 상품 상세
 목표: 상품 목록에서 상품을 눌러 들어가면 상세 화면(ProductDetail.jsx)이 보인다
 지금: 끝 — 남은 다듬기: 서버 꺼짐 같은 다른 에러 표시, 사진 보내 주기(상품 올리기 때), 수정 · 삭제 버튼(아이디어), 커밋 · 올리기
