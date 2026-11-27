@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from database import Base
@@ -17,3 +18,25 @@ class RefreshToken(Base):
   # 토큰마다 고유 번호(jti)
   id: Mapped[str] = mapped_column(primary_key=True)
   user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+
+
+class Product(Base):
+  __tablename__ = 'products'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  title: Mapped[str]
+  price: Mapped[int]
+  description: Mapped[str]
+  image_url: Mapped[str]
+  location: Mapped[str]
+  status: Mapped[str] = mapped_column(default='판매중')
+  seller_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+  created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+
+class Like(Base):
+  __tablename__ = 'likes'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+  product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
