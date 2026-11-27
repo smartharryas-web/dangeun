@@ -16,6 +16,7 @@
 | refresh_tokens | 로그인 유지용 | users (시작 저장소에 있음) |
 | products | id · title · price · description · image_url · location · status · seller_id · created_at | seller_id → users |
 | likes | id · user_id · product_id | user_id → users · product_id → products |
+| temp_products | id · user_id · title · category · price · description · location · image_url | user_id → users (사용자마다 하나 — unique) |
 
 ## 기능
 
@@ -23,7 +24,7 @@
 | --- | --- | --- | --- |
 | 상품 목록 (사진 · 제목 · 가격 · 판매 상태) | 필수 | 심병규 | 끝 (사진은 임시) |
 | 상품 상세 | 필수 | 이상록 | 끝 (사진은 임시) |
-| 상품 올리기 + 사진 | 필수 | | |
+| 상품 올리기 + 사진 | 필수 | 한희 | 하는 중 (/new 화면, 임시저장 서버 주소 약속) |
 | 찜 토글 | 필수 | | |
 | 판매 상태 바꾸기 (판매중 → 예약중 → 판매완료, 내 상품만) | 필수 | | |
 | | 추가 | | |
@@ -36,6 +37,9 @@
 | --- | --- | --- | --- |
 | GET | /api/products | 상품 목록 (로그인 없이 누구나) | 심병규 |
 | GET | /api/products/{product_id} | 상품 하나 가져오기 (상세 화면) | 이상록 |
+| POST | /api/tempMemory | 상품 올리기 임시저장하기 (로그인 필요) | 한희 |
+| GET | /api/tempMemory | 임시저장 불러오기 (로그인 필요) | 한희 |
+| DELETE | /api/tempMemory | 임시저장 지우기 (로그인 필요) | 한희 |
 
 ## 주소 약속
 
@@ -53,3 +57,25 @@
 - 실패: 401 로그인 안 함 · 404 없는 상품
 - 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 만듦(main) → 연결됨
+
+### 임시저장하기
+- 주소: POST /api/tempMemory (로그인 필요)
+- 요청: 사진(최대 10장) · title(상품명) · category — 사진 파일이 들어가서 글자 묶음(JSON)이 아니라 파일을 함께 보내는 양식(form-data)으로 보냄
+- 응답 201: 저장된 임시저장 — {"title": "자전거", "category": "기타", "images": ["/uploads/temp/1.jpg"]}
+- 실패: 401 로그인 안 함 · 409 이미 임시저장이 있음 (사용자마다 하나) · 400 사진이 10장 넘음
+- 정한 사람: 한희(프론트 · 서버 둘 다 직접 만듦)
+- 상태: 약속
+
+### 임시저장 불러오기
+- 주소: GET /api/tempMemory (로그인 필요 · 내 것만)
+- 응답 200: 임시저장 — {"title": "자전거", "category": "기타", "images": ["/uploads/temp/1.jpg"]}
+- 실패: 401 로그인 안 함 · 404 임시저장이 없음 (화면은 이때 팝업을 띄우지 않음)
+- 정한 사람: 한희(프론트 · 서버 둘 다 직접 만듦)
+- 상태: 약속
+
+### 임시저장 지우기
+- 주소: DELETE /api/tempMemory (로그인 필요 · 내 것만)
+- 응답 204: 내용 없음 (화면이 불러오기 팝업에서 "네"를 누를 때 부름)
+- 실패: 401 로그인 안 함 · 404 임시저장이 없음
+- 정한 사람: 한희(프론트 · 서버 둘 다 직접 만듦)
+- 상태: 약속

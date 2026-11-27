@@ -4,6 +4,7 @@ import Home from './routes/Home.jsx'
 import ProductDetail from './routes/ProductDetail.jsx'
 import Login from './routes/Login.jsx'
 import Signup from './routes/Signup.jsx'
+import NewProduct from './routes/NewProduct.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route element={<RequireLogin />}>
             <Route path="/" element={<Home />} />
+            <Route path="/new" element={<NewProduct />} />
             <Route path="/product/:id" element={<ProductDetail />} />
           </Route>
         </Routes>

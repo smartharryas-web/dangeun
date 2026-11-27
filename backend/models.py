@@ -40,3 +40,16 @@ class Like(Base):
   id: Mapped[int] = mapped_column(primary_key=True)
   user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
   product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
+
+
+class TempProduct(Base):
+  __tablename__ = 'temp_products'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), unique=True)
+  title: Mapped[str | None]
+  category: Mapped[str | None]
+  price: Mapped[int | None]
+  description: Mapped[str | None]
+  location: Mapped[str | None]
+  image_url: Mapped[str | None]
