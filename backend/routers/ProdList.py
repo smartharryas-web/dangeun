@@ -83,8 +83,18 @@ def clean_tags(tags: str | None):
   return ' '.join(words) or None
 
 
+MAX_PRICE = 21_000_000_000_000  # 가격은 21조 원까지 (말도 안 되는 숫자로 DB가 넘치지 않게)
+
+
+# 가격 범위 검사 (올리기 · 고치기 · 임시저장이 같이 씀)
+def check_price(price: int | None):
+  if price is not None and price > MAX_PRICE:
+    raise HTTPException(status_code=400, detail='가격은 21조 원까지 입력할 수 있어요.')
+
+
 # 양식 칸을 상품에 옮겨 담기 (올리기 · 고치기가 같이 씀)
 def apply_form(product: Product, data: ProductFormIn):
+  check_price(data.price)
   product.title = data.title
   product.price = data.price
   product.description = data.description

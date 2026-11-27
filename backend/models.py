@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import ForeignKey, UniqueConstraint, false, true
+from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint, false, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
@@ -25,7 +25,7 @@ class Product(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   title: Mapped[str]
-  price: Mapped[int]
+  price: Mapped[int] = mapped_column(BigInteger)  # 21억 넘는 가격도 담게 BIGINT
   description: Mapped[str]
   image_url: Mapped[str]
   location: Mapped[str]
@@ -96,7 +96,7 @@ class TempProduct(Base):
   user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), unique=True)
   title: Mapped[str | None]
   category: Mapped[str | None]
-  price: Mapped[int | None]
+  price: Mapped[int | None] = mapped_column(BigInteger)  # 21억 넘는 가격도 담게 BIGINT
   description: Mapped[str | None]
   location: Mapped[str | None]
   image_url: Mapped[str | None]
@@ -112,7 +112,7 @@ class Offer(Base):
   id: Mapped[int] = mapped_column(primary_key=True)
   product_id: Mapped[int] = mapped_column(ForeignKey('products.id', ondelete='CASCADE'))
   buyer_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-  price: Mapped[int]
+  price: Mapped[int] = mapped_column(BigInteger)  # 21억 넘는 가격도 담게 BIGINT
   status: Mapped[str] = mapped_column(default='대기')  # 대기 · 수락 · 거절
   created_at: Mapped[datetime] = mapped_column(default=datetime.now)
 

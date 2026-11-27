@@ -6,6 +6,7 @@ from schemas import TempMemoryOut
 from deps import SessionDep, CurrentUserDep
 from models import TempProduct
 from sqlalchemy import select
+from routers.ProdList import check_price
 
 router = APIRouter(prefix='/api/tempMemory', tags=['tempMemory'])
 
@@ -37,6 +38,7 @@ def save_temp(
 ):
   if len(images) > 10:
     raise HTTPException(status_code=400, detail='사진은 10장을 넘게 넣을 수 없습니다.')
+  check_price(price)
 
   temp = db.scalar(select(TempProduct).where(TempProduct.user_id == user.id))
 

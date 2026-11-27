@@ -170,6 +170,7 @@
 ### 상품 올리기
 - 주소: POST /api/products (로그인 필요)
 - 요청: 파일을 함께 보내는 양식(form-data) — images(사진, 1~10장, 저장은 첫 번째 한 장만) · title · price · description · location (category는 products에 칸이 없어 저장하지 않음)
+- 바꿈(심병규): 가격은 0 ~ 21조 원 (DB 칸은 BIGINT — 원래 INTEGER라 약 21억이 넘으면 서버가 터졌음), 넘으면 400 "가격은 21조 원까지 입력할 수 있어요."
 - 바꿈(심병규): 사진은 1~10장 전부 저장(첫 장이 대표), 칸 추가 — category · condition · brand · tags · negotiable · can_meet · can_ship · shipping_included · has_warranty (title 40자 · description 2000자까지). 상세 응답에 images(사진 주소 목록) · 위 칸 · view_count. 상세를 남이 볼 때마다 조회수 +1
 - 자동으로 채움: status("판매중") · seller_id(로그인한 사람) · created_at(올린 순간)
 - 응답 201: 올라간 상품 하나 (상품 상세와 같은 모양) — {"id": 4, "title": "자전거", "price": 50000, "description": "...", "image_url": "/uploads/products/1f3c...jpg", "location": "홍제역", "status": "판매중", "seller_id": 1, "seller_username": "asdf", "created_at": "..."}

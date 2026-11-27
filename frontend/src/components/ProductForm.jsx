@@ -3,6 +3,7 @@ import { CATEGORIES, CONDITIONS } from '../constants.js'
 
 const MAX_IMAGES = 10
 const MAX_DESCRIPTION = 2000
+const MAX_PRICE = 21_000_000_000_000 // 서버와 같은 규칙: 21조 원까지
 
 // 빈 양식 (올리기 화면이 처음 쓰는 값)
 export const EMPTY_FORM = {
@@ -30,6 +31,7 @@ export function checkForm(values, images) {
     return '빠진 칸이 있습니다. 사진 · 상품명 · 카테고리 · 상품 상태 · 가격 · 설명 · 거래 희망 장소를 모두 입력해 주세요.'
   }
   if (!values.can_meet && !values.can_ship) return '직거래 · 택배 중 하나는 골라 주세요.'
+  if (Number(values.price) > MAX_PRICE) return '가격은 21조 원까지 입력할 수 있어요.'
   return ''
 }
 
@@ -151,7 +153,7 @@ function ProductForm({ values, onChange, images, setImages }) {
       <input className="form-control mb-3" placeholder="#롤렉스 #풀세트" {...field('tags')} />
 
       <label className="form-label" htmlFor="price">가격</label>
-      <input className="form-control mb-2" type="number" min="0" {...field('price')} />
+      <input className="form-control mb-2" type="number" min="0" max={MAX_PRICE} {...field('price')} />
       <div className="form-check mb-3">
         <input {...check('negotiable')} />
         <label className="form-check-label" htmlFor="negotiable">가격 제안 받기</label>
