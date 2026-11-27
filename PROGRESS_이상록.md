@@ -9,6 +9,13 @@
 3. 나누기 — products 칸 이름 제안(title · price · description · image_url · status · region · view_count · created_at · updated_at · seller_id)은 일단 넘어감, 표 목록부터
 4. 나누기 — 표 후보: products, likes(찜 저장용) — 학생이 말함
 
+## 찜 (필수 기능: 찜 토글)
+목표: 찜(하트)을 누르면 찜이 켜지고 꺼진다
+지금: 다 됐을 때 어떤 화면에서 무엇이 보이면 되는지 정할 차례
+
+0. 순서 — 찜을 시작하기 전에 학생이 수정한 시드(상품 102개)를 sangrok에 먼저 올림 (Claude가 문법 · status · seller · 가격 모양 확인)
+1. 순서 — 찜(좋아요 하트)을 만들기로. Claude가 SPEC과 origin을 확인: 담당 비어 있고 찜 코드도 아직 없음(likes 표만 있음)
+
 ## 댓글 (추가 기능: 문의 댓글)
 목표: 상품 상세의 이미지 아래에 댓글이 보인다
 지금: 끝(sangrok에 있음, main 합치기는 팀과 나중에) — 남은 다듬기: 상품 삭제 서버 연결, 댓글 에러 처리 · 엔터로 제출 · 빈 댓글 안내, 시드 데이터 넣기
