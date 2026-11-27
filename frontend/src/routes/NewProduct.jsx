@@ -13,6 +13,9 @@ function NewProduct() {
   const [error, setError] = useState('')
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('')
+  const [price, setPrice] = useState('')
+  const [description, setDescription] = useState('')
+  const [location, setLocation] = useState('')
 
   function handleImages(e) {
     const files = [...e.target.files]
@@ -46,6 +49,12 @@ function NewProduct() {
           <option key={c} value={c}>{c}</option>
         ))}
       </select>
+      <label className="form-label" htmlFor="price">가격</label>
+      <input className="form-control mb-3" id="price" type="number" value={price} onChange={e => setPrice(e.target.value)} />
+      <label className="form-label" htmlFor="description">설명</label>
+      <textarea className="form-control mb-3" id="description" rows="5" value={description} onChange={e => setDescription(e.target.value)} />
+      <label className="form-label" htmlFor="location">거래 희망 장소</label>
+      <input className="form-control mb-3" id="location" value={location} onChange={e => setLocation(e.target.value)} />
     </div>
   )
 }

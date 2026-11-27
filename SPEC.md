@@ -16,6 +16,7 @@
 | refresh_tokens | 로그인 유지용 | users (시작 저장소에 있음) |
 | products | id · title · price · description · image_url · location · status · seller_id · created_at | seller_id → users |
 | likes | id · user_id · product_id | user_id → users · product_id → products |
+| temp_products | id · user_id · title · category · price · description · location · image_url | user_id → users (사용자마다 하나 — unique) |
 
 ## 기능
 
