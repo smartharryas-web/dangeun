@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '../hooks/useAuth.jsx'
+import { SERVER_URL } from '../api.js'
 
 const CATEGORIES = [
   '여성의류', '남성의류', '신발', '가방/지갑', '시계', '쥬얼리', '패션 액세서리',
@@ -16,6 +18,64 @@ function NewProduct() {
   const [price, setPrice] = useState('')
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('')
+  const { authApi } = useAuth()
+
+  // 들어오면 임시저장이 있는지 보고, 있으면 불러올지 물어본다
+  useEffect(() => {
+    let ignore = false
+
+    async function loadTemp() {
+      let temp
+      try {
+        temp = await authApi('/api/tempMemory', {})
+      } catch (e) {
+        return // 404면 임시저장이 없는 것
+      }
+      if (ignore) return
+      if (!confirm('임시저장된 품목이 있습니다. 불러올까요?')) return
+
+      try {
+        // 서버에 저장된 사진을 받아 와서 파일로 만든다 (아래에서 서버 사진이 지워지기 때문)
+        const files = []
+        for (const url of temp.images) {
+          const res = await fetch(`${SERVER_URL}${url}`)
+          const blob = await res.blob()
+          files.push(new File([blob], url.split('/').pop(), { type: blob.type }))
+        }
+
+        setTitle(temp.title || '')
+        setCategory(temp.category || '')
+        setPrice(temp.price || '')
+        setDescription(temp.description || '')
+        setLocation(temp.location || '')
+        setImages(files)
+
+        await authApi('/api/tempMemory', { method: 'DELETE' })
+      } catch (e) {
+        alert(e.message)
+      }
+    }
+    loadTemp()
+
+    return () => { ignore = true }
+  }, [])
+
+  async function handleTempSave() {
+    const form = new FormData()
+    if (title) form.append('title', title)
+    if (category) form.append('category', category)
+    if (price) form.append('price', price)
+    if (description) form.append('description', description)
+    if (location) form.append('location', location)
+    images.forEach(image => form.append('images', image))
+
+    try {
+      await authApi('/api/tempMemory', { method: 'POST', body: form })
+      alert('임시저장되었습니다.')
+    } catch (e) {
+      alert(e.message)
+    }
+  }
 
   function handleImages(e) {
     const files = [...e.target.files]
@@ -55,6 +115,7 @@ function NewProduct() {
       <textarea className="form-control mb-3" id="description" rows="5" value={description} onChange={e => setDescription(e.target.value)} />
       <label className="form-label" htmlFor="location">거래 희망 장소</label>
       <input className="form-control mb-3" id="location" value={location} onChange={e => setLocation(e.target.value)} />
+      <button className="btn btn-outline-secondary" onClick={handleTempSave}>임시저장</button>
     </div>
   )
 }
