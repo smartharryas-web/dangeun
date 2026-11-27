@@ -26,7 +26,7 @@ function Signup() {
     <div className="mx-auto" style={{ maxWidth: 360 }}>
       <h2 className="h4 mb-3">가입</h2>
       <form className="d-grid gap-2" onSubmit={handleSubmit}>
-        <input className="form-control" value={username} onChange={e => setUsername(e.target.value)} placeholder="아이디(3글자 이상)" minLength={3} required />
+        <input className="form-control" value={username} onChange={e => setUsername(e.target.value)} placeholder="아이디(3~20글자)" minLength={3} maxLength={20} required />
         <input className="form-control" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="비밀번호(4글자 이상)" minLength={4} required />
         <button className="btn btn-primary">가입</button>
       </form>

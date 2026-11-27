@@ -70,3 +70,52 @@ body {
   border-color: var(--color-text-sub);
   color: var(--color-text-sub);
 }
+
+/* ── 로고 화면 (routes/Intro.jsx, /intro) ── */
+
+/* 위 메뉴 줄까지 덮는 꽉 찬 화면 (신세계 첫 화면처럼) */
+.intro {
+  position: fixed;   /* 스크롤과 상관없이 화면에 딱 붙임 */
+  inset: 0;          /* 위 · 아래 · 왼쪽 · 오른쪽 끝까지 */
+  z-index: 2000;     /* 메뉴 줄보다 위에 */
+  display: flex;
+  align-items: center;      /* 세로 가운데 */
+  justify-content: center;  /* 가로 가운데 */
+  background: var(--color-text);  /* 임시: 사진 정하기 전까지 진한 갈색 */
+  color: var(--color-bg);
+  text-decoration: none;
+}
+
+/* 배경 사진: 화면을 꽉 채우고, 갈색 바탕이 비치게 흐리게 깔아 은은하게 */
+.intro-bg {
+  position: absolute;  /* .intro 안에서 겹쳐 깔기 */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* 비율은 그대로, 화면을 꽉 채우고 넘치는 건 잘라냄 */
+  opacity: 0.3;        /* 30%만 보이게 → 나머지는 갈색 바탕이 비침 */
+  filter: blur(2px);   /* 간판 · 디테일이 덜 보이게 살짝 뭉갬 */
+}
+
+/* 로고 글자: 영문이라 Inter (로고 · 영문은 Inter로 정해 둠) */
+.intro-logo {
+  position: relative;  /* 배경 사진보다 위에 그려지게 */
+  font-family: var(--font-en);
+  font-size: 4rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  /* 움직임 이름 · 걸리는 시간 · 속도 변화 · 기다렸다 시작 · 시작 전/끝난 뒤 모습 유지 */
+  animation: intro-rise 1.6s ease-out 0.3s both;
+}
+
+/* 로고가 통째로 서서히 떠오르는 움직임: 투명 + 살짝 아래 → 선명 + 제자리 */
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

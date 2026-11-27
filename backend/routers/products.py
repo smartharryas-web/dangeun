@@ -7,8 +7,9 @@ from sqlalchemy import select
 router = APIRouter(prefix='/api/products', tags=['products'])
 
 
+# 상품 상세: 로그인 없이 누구나 (상품 목록처럼)
 @router.get('/{product_id}', response_model=ProductDetailOut)
-def get_product(product_id: int, db: SessionDep, user: CurrentUserDep):
+def get_product(product_id: int, db: SessionDep):
   product = db.scalar(select(Product).where(Product.id == product_id))
 
   if not product:
@@ -30,8 +31,9 @@ def get_product(product_id: int, db: SessionDep, user: CurrentUserDep):
   )
 
 
+# 댓글 목록: 로그인 없이 누구나 (쓰기 · 고치기 · 지우기는 로그인 필요)
 @router.get('/{product_id}/comments', response_model=list[CommentOut])
-def list_comments(product_id: int, db: SessionDep, user: CurrentUserDep):
+def list_comments(product_id: int, db: SessionDep):
   product = db.scalar(select(Product).where(Product.id == product_id))
 
   if not product:

@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { imageSrc } from '../api.js'
 
 // 판매 상태 → 딱지 색 이름표 (색은 design.css에)
 const statusClass = {
@@ -13,7 +14,7 @@ const statusClass = {
 function Product({ product }) {
   return (
     <Link to={`/product/${product.id}`} className="product d-flex gap-3 mb-3">
-      <img src={product.image_url} alt={product.title} width="100" height="100" />
+      <img src={imageSrc(product.image_url)} alt={product.title} width="100" height="100" />
       <div>
         <div className="product-title">{product.title}</div>
         <div className="product-price">{product.price}원</div>

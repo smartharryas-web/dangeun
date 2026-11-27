@@ -5,7 +5,8 @@ function RequireLogin() {
   const { token, ready } = useAuth()
 
   if (!ready) return null
-  if (!token) return <Navigate to="/login" />
+  // replace: 방문 기록을 덮어써서 뒤로가기를 눌러도 다시 여기로 튕기지 않게
+  if (!token) return <Navigate to="/login" replace />
   return <Outlet />
 }
 

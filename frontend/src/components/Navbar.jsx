@@ -11,6 +11,8 @@ function Navbar() {
         {token ? (
           <div className="d-flex align-items-center gap-2">
             {user && <span>{user.username}</span>}
+            {/* 상품 올리기 화면(/new)으로 가는 입구 — 로그인했을 때만 */}
+            <Link className="btn btn-sm btn-outline-secondary" to="/new">판매하기</Link>
             <button className="btn btn-sm btn-outline-secondary" onClick={logout}>로그아웃</button>
           </div>
         ) : (

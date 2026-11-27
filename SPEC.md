@@ -29,6 +29,7 @@
 | 찜 토글 | 필수 | | |
 | 판매 상태 바꾸기 (판매중 → 예약중 → 판매완료, 내 상품만) | 필수 | | |
 | 문의 댓글 (상품 상세 이미지 아래 · 작성 · 내 댓글 수정 · 삭제) | 추가 | 이상록 | 하는 중 (목록 서버 주소 약속) |
+| 로고 화면 /intro (사이트를 / 로 새로 열 때 · 누르면 목록 · 시간대별 배경 사진) | 추가 | 심병규 | 끝 |
 
 추가 기능 예: 문의 댓글 · 판매자 페이지 · 10개씩 · 정렬 · 카테고리 · 팀이 생각한 것
 
@@ -37,8 +38,8 @@
 | 메서드 | 주소 | 하는 일 | 담당 |
 | --- | --- | --- | --- |
 | GET | /api/products | 상품 목록 (로그인 없이 누구나) | 심병규 |
-| GET | /api/products/{product_id} | 상품 하나 가져오기 (상세 화면) | 이상록 |
-| GET | /api/products/{product_id}/comments | 상품의 댓글 목록 (로그인 필요) | 이상록 |
+| GET | /api/products/{product_id} | 상품 하나 가져오기 (상세 화면, 로그인 없이 누구나) | 이상록 |
+| GET | /api/products/{product_id}/comments | 상품의 댓글 목록 (로그인 없이 누구나) | 이상록 |
 | POST | /api/products/{product_id}/comments | 상품에 댓글 쓰기 (로그인 필요) | 이상록 |
 | PATCH | /api/comments/{comment_id} | 댓글 고치기 (로그인 필요 · 내 댓글만) | 이상록 |
 | DELETE | /api/comments/{comment_id} | 댓글 지우기 (로그인 필요 · 내 댓글만) | 이상록 |
@@ -57,17 +58,17 @@
 - 상태: 만듦(main) → 연결됨
 
 ### 상품 하나 가져오기
-- 주소: GET /api/products/{product_id} (로그인 필요)
+- 주소: GET /api/products/{product_id} (로그인 필요 없음 — 바꿈: 심병규, 로그인 없이 상세 구경)
 - 요청: 없음 (주소의 product_id가 상품 번호)
 - 응답 200: 상품 하나 — {"id": 1, "title": "자전거 팝니다", "price": 50000, "description": "2년 탔어요. 상태 좋아요.", "image_url": "https://...", "location": "역삼동", "status": "판매중", "seller_id": 1, "seller_username": "minsu", "created_at": "2026-11-27T10:00:00"}
-- 실패: 401 로그인 안 함 · 404 없는 상품
+- 실패: 404 없는 상품
 - 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 만듦(main) → 연결됨
 
 ### 상품의 댓글 목록
-- 주소: GET /api/products/{product_id}/comments (로그인 필요)
+- 주소: GET /api/products/{product_id}/comments (로그인 필요 없음 — 바꿈: 심병규, 로그인 없이 상세 구경. 쓰기 칸은 로그인한 사람만 보임)
 - 응답 200: 댓글 목록, 오래된 것부터(시간순) — [{"id": 1, "content": "아직 팔렸나요?", "created_at": "2026-11-27T14:30:00", "updated_at": null, "user_id": 2, "username": "qwer"}, ...] (댓글이 없으면 빈 목록 [])
-- 실패: 401 로그인 안 함 · 404 없는 상품
+- 실패: 404 없는 상품
 - 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 약속
 
