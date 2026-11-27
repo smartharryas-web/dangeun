@@ -34,4 +34,14 @@
 
 | 메서드 | 주소 | 하는 일 | 담당 |
 | --- | --- | --- | --- |
-| | | | |
+| GET | /api/products/{product_id} | 상품 하나 가져오기 (상세 화면) | |
+
+## 주소 약속
+
+### 상품 하나 가져오기
+- 주소: GET /api/products/{product_id} (로그인 필요)
+- 요청: 없음 (주소의 product_id가 상품 번호)
+- 응답 200: 상품 하나 — {"id": 1, "title": "자전거 팝니다", "price": 50000, "description": "2년 탔어요. 상태 좋아요.", "image_url": "https://...", "location": "역삼동", "status": "판매중", "seller_id": 1, "seller_username": "minsu", "created_at": "2026-11-27T10:00:00"}
+- 실패: 401 로그인 안 함 · 404 없는 상품
+- 정한 사람: 이상록(프론트, 상품 상세) · (서버 담당 미정)
+- 상태: 약속(초안)
