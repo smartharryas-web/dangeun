@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { api } from '../api.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { CATEGORIES, SORTS } from '../constants.js'
 import Product from '../components/Product.jsx'
 import RecentProducts from '../components/RecentProducts.jsx'
-import Intro from './Intro.jsx'
 
 function Home() {
   const { token, ready, authApi } = useAuth()
-  // 로고 화면에서 눌러 들어왔는지 (Intro의 Link가 state로 넘긴 쪽지)
-  const location = useLocation()
   // 검색어 · 카테고리 · 정렬 · 판매완료 빼기는 주소(?q=...)에 둔다 → 메뉴 줄 검색창에서 보내기 쉽고, 새로고침해도 그대로
   const [params, setParams] = useSearchParams()
   const q = params.get('q') || ''
@@ -57,8 +54,6 @@ function Home() {
 
   return (
     <div>
-      {/* 로고 화면에서 왔으면 목록 위에 로고 화면을 막으로 덮었다가 가운데서 갈라지게 */}
-      {location.state?.fromIntro && <Intro opening />}
       {!q && !category && <RecentProducts />}
 
       {/* 카테고리 메뉴 (가로로 넘겨 보기) */}
