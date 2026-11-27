@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
+from pydantic import BaseModel, Field
 
 
 class UserOut(BaseModel):
@@ -25,4 +25,18 @@ class ProductOut(BaseModel):
   image_url: str
   location: str
   status: str
+  created_at: datetime
+
+
+# 상품 상세 (목록 칸 + 설명 · 판매자)
+class ProductDetailOut(BaseModel):
+  id: int
+  title: str
+  price: int
+  description: str
+  image_url: str
+  location: str
+  status: str
+  seller_id: int
+  seller_username: str
   created_at: datetime
