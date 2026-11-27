@@ -48,6 +48,7 @@ def list_comments(product_id: int, db: SessionDep, user: CurrentUserDep):
       id=comment.id,
       content=comment.content,
       created_at=comment.created_at,
+      updated_at=comment.updated_at,
       user_id=comment.user_id,
       username=writer.username,
     ))
@@ -70,6 +71,7 @@ def create_comment(product_id: int, data: CommentCreate, db: SessionDep, user: C
     id=comment.id,
     content=comment.content,
     created_at=comment.created_at,
+    updated_at=comment.updated_at,
     user_id=user.id,
     username=user.username,
   )

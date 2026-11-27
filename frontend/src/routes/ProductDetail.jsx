@@ -21,6 +21,7 @@ function ProductDetail() {
   const [comments, setComments] = useState([])
   const [commentText, setCommentText] = useState('')
   const [deleteCommentId, setDeleteCommentId] = useState(null)
+  const [editCommentId, setEditCommentId] = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -53,12 +54,24 @@ function ProductDetail() {
 
   async function submitComment() {
     if (commentText === '') return
-    const comment = await authApi(`/api/products/${id}/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: commentText }),
-    })
-    setComments([...comments, comment])
+
+    if (editCommentId === null) {
+      const comment = await authApi(`/api/products/${id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: commentText }),
+      })
+      setComments([...comments, comment])
+    } else {
+      const edited = await authApi(`/api/comments/${editCommentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: commentText }),
+      })
+      setComments(comments.map((comment) => (comment.id === editCommentId ? edited : comment)))
+      setEditCommentId(null)
+    }
+
     setCommentText('')
   }
 
@@ -88,14 +101,35 @@ function ProductDetail() {
           <button className="btn btn-outline-secondary" onClick={submitComment}>
             제출
           </button>
+          {editCommentId !== null && (
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => {
+                setEditCommentId(null)
+                setCommentText('')
+              }}
+            >
+              취소
+            </button>
+          )}
         </div>
         {comments.map((comment) => (
           <div key={comment.id}>
             <strong>{comment.username}</strong> {comment.content}
-            <span className="ms-2">{formatTime(comment.created_at)}</span>
+            <span className="ms-2">
+              {comment.updated_at ? '수정됨' : formatTime(comment.created_at)}
+            </span>
             {user && user.id === comment.user_id && (
               <>
-                <button className="btn btn-sm btn-outline-secondary ms-2">수정</button>
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-2"
+                  onClick={() => {
+                    setEditCommentId(comment.id)
+                    setCommentText(comment.content)
+                  }}
+                >
+                  수정
+                </button>
                 <button
                   className="btn btn-sm btn-outline-danger ms-1"
                   onClick={() => setDeleteCommentId(comment.id)}

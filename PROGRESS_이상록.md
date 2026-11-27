@@ -11,7 +11,7 @@
 
 ## 댓글 (추가 기능: 문의 댓글)
 목표: 상품 상세의 이미지 아래에 댓글이 보인다
-지금: 시간이 보이는지 확인 후 댓글 수정 서버 주소 약속 정하기, DB 층을 올릴지 정하기
+지금: 댓글 수정 · 삭제 화면 확인 후 main에 합치기
 
 1. 위치 — 상품 상세 화면, 이미지 아래
 2. 나누기 — 새 표 comments가 필요, 칸 후보: id · product_id · user_id · content · time (학생)
@@ -50,6 +50,13 @@
 35. 순서 — DB 층(comments 표 · updated_at)을 지금 올리기로 (학생: 지금 올려), 커밋 이름: 상품 상세에 댓글 기능 추가 (목록 · 쓰기 · 삭제, comments 표)
 36. 충돌 — main.py(팀원 tempMemory · /uploads + 내 comments), 둘 다 살림
 37. 확인 — 합친 뒤 서버 import · 주소 10개(댓글 3종 포함) · vite build 통과(Claude가 확인)
+38. 순서 — 수정까지 다 만든 뒤 main에 합치기 (학생: 수정 다 만들고 합치자)
+39. 약속 — PATCH /api/comments/{comment_id}, 요청 {content}, 응답 200 고친 댓글, 401 · 403 · 404 · 422, 댓글 응답 전체에 updated_at(수정 전 null) 추가, SPEC에 적음
+40. 코드 — schemas.py에 CommentUpdate · CommentOut.updated_at, comments.py에 PATCH(updated_at에 지금 시간), products.py 목록 · 쓰기 응답에 updated_at, 서버 import 확인(Claude)
+41. 확인 — 학생이 /docs에서 PATCH 응답(고침, updated_at 채워짐)을 확인했다고 붙여 줌
+42. 코드 — editCommentId state(고치는 중인 댓글 번호, 없으면 null), 수정 버튼이 번호를 담고 내용을 위쪽 텍스트 박스에 채움, 제출은 editCommentId가 있으면 PATCH 후 그 댓글만 바꿈, 댓글 오른쪽은 updated_at이 있으면 "수정됨" 없으면 시간
+43. 나누기 — 수정 중 빠져나올 방법으로 수정 중일 때만 제출 옆에 "취소" 버튼
+44. 코드 — editCommentId가 있을 때만 취소 버튼, 누르면 editCommentId를 null로 · 박스를 비움
 
 ## 내 글 수정 · 삭제 (삭제는 서버 주소 단계에서 멈춤)
 목표: 상품 상세 화면에서 내 글이면 수정 · 삭제가 나온다

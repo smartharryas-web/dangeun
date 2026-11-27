@@ -40,6 +40,7 @@
 | GET | /api/products/{product_id} | 상품 하나 가져오기 (상세 화면) | 이상록 |
 | GET | /api/products/{product_id}/comments | 상품의 댓글 목록 (로그인 필요) | 이상록 |
 | POST | /api/products/{product_id}/comments | 상품에 댓글 쓰기 (로그인 필요) | 이상록 |
+| PATCH | /api/comments/{comment_id} | 댓글 고치기 (로그인 필요 · 내 댓글만) | 이상록 |
 | DELETE | /api/comments/{comment_id} | 댓글 지우기 (로그인 필요 · 내 댓글만) | 이상록 |
 | POST | /api/tempMemory | 상품 올리기 임시저장하기 (로그인 필요) | 한희 |
 | GET | /api/tempMemory | 임시저장 불러오기 (로그인 필요) | 한희 |
@@ -64,7 +65,7 @@
 
 ### 상품의 댓글 목록
 - 주소: GET /api/products/{product_id}/comments (로그인 필요)
-- 응답 200: 댓글 목록, 오래된 것부터(시간순) — [{"id": 1, "content": "아직 팔렸나요?", "created_at": "2026-11-27T14:30:00", "user_id": 2, "username": "qwer"}, ...] (댓글이 없으면 빈 목록 [])
+- 응답 200: 댓글 목록, 오래된 것부터(시간순) — [{"id": 1, "content": "아직 팔렸나요?", "created_at": "2026-11-27T14:30:00", "updated_at": null, "user_id": 2, "username": "qwer"}, ...] (댓글이 없으면 빈 목록 [])
 - 실패: 401 로그인 안 함 · 404 없는 상품
 - 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 약속
@@ -72,8 +73,16 @@
 ### 상품에 댓글 쓰기
 - 주소: POST /api/products/{product_id}/comments (로그인 필요)
 - 요청: {"content": "아직 팔렸나요?"} (쓴 사람은 로그인 정보로 서버가 앎)
-- 응답 201: 방금 쓴 댓글 하나 — {"id": 1, "content": "아직 팔렸나요?", "created_at": "2026-11-27T14:30:00", "user_id": 2, "username": "qwer"}
+- 응답 201: 방금 쓴 댓글 하나 — {"id": 1, "content": "아직 팔렸나요?", "created_at": "2026-11-27T14:30:00", "updated_at": null, "user_id": 2, "username": "qwer"}
 - 실패: 401 로그인 안 함 · 404 없는 상품 · 422 내용이 비어 있음
+- 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
+- 상태: 약속
+
+### 댓글 고치기
+- 주소: PATCH /api/comments/{comment_id} (로그인 필요 · 내 댓글만)
+- 요청: {"content": "고친 내용"}
+- 응답 200: 고친 댓글 하나 — {"id": 1, "content": "고친 내용", "created_at": "2026-11-27T14:30:00", "updated_at": "2026-11-27T15:10:00", "user_id": 2, "username": "qwer"} (updated_at은 서버가 지금 시간으로 넣음. 화면은 updated_at이 null이 아니면 "수정됨"을 보여 줌)
+- 실패: 401 로그인 안 함 · 403 남의 댓글 · 404 없는 댓글 · 422 내용이 비어 있음
 - 정한 사람: 이상록(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 약속
 
