@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
-import { api, imageSrc } from '../api.js'
+import { api } from '../api.js'
 import LikeButton from '../components/LikeButton.jsx'
+import ImageGallery from '../components/ImageGallery.jsx'
+import ProductInfo from '../components/ProductInfo.jsx'
+import MarketPrice from '../components/MarketPrice.jsx'
+import SimilarProducts from '../components/SimilarProducts.jsx'
 import { formatPrice, timeAgo } from '../format.js'
 import { addRecent, removeRecent } from '../recent.js'
 
@@ -128,16 +132,12 @@ function ProductDetail() {
   }
 
   return (
-    <div className="d-flex gap-4">
-      <div className="flex-shrink-0">
-        <img
-          src={imageSrc(product.image_url)}
-          alt={product.title}
-          width="512"
-          height="512"
-          style={{ objectFit: 'cover' }}
-        />
-        <h5>댓글</h5>
+    <div>
+    <div className="d-flex flex-wrap gap-4 mb-4">
+      <div className="flex-shrink-0" style={{ maxWidth: '100%' }}>
+        {/* 사진 여러 장 넘겨 보기 (상품이 바뀌면 key로 첫 장부터 다시) */}
+        <ImageGallery key={product.id} images={product.images} alt={product.title} />
+        <h5 className="mt-3">댓글</h5>
         {/* 댓글 쓰기 칸은 로그인한 사람만 (댓글 목록은 누구나 봄) */}
         {user && (
           <div className="d-flex gap-2">
@@ -207,7 +207,17 @@ function ProductDetail() {
           </div>
         )}
       </div>
-      <div>
+      <div className="flex-grow-1" style={{ minWidth: 280 }}>
+        {/* 카테고리 경로: 누르면 그 카테고리 목록으로 */}
+        <div className="small mb-1">
+          <Link to="/" className="text-decoration-none" style={{ color: 'var(--color-text-sub)' }}>전체</Link>
+          {product.category && (
+            <>
+              <span style={{ color: 'var(--color-text-sub)' }}> › </span>
+              <Link to={`/?category=${encodeURIComponent(product.category)}`} className="text-decoration-none">{product.category}</Link>
+            </>
+          )}
+        </div>
         <div className="d-flex align-items-center gap-2">
           <h2 className="mb-0">{product.title}</h2>
           <LikeButton
@@ -226,9 +236,10 @@ function ProductDetail() {
           </button>
         </div>
         <p className="small mb-2" style={{ color: 'var(--color-text-sub)' }}>
-          {product.location} · {timeAgo(product.created_at)}
+          {product.location} · {timeAgo(product.created_at)} · 조회 {product.view_count} · 찜 {product.like_count}
         </p>
         <p className="product-price fs-4">{formatPrice(product.price)}</p>
+        <ProductInfo product={product} />
         <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
         {/* 판매 상태: 내 상품이면 고르는 칸, 아니면 글자만 */}
         {isMine ? (
@@ -244,7 +255,11 @@ function ProductDetail() {
         ) : (
           <p>{product.status}</p>
         )}
-        <p>{isMine ? '내가 쓴 글' : `판매자: ${product.seller_username}`}</p>
+        {/* 판매자: 누르면 그 사람 상점 */}
+        <p>
+          {isMine ? '내가 쓴 글 · ' : '판매자: '}
+          <Link to={`/shop/${product.seller_id}`}>{product.seller_username}님의 상점</Link>
+        </p>
         {isMine && (
           <div>
             <Link to={`/product/${id}/edit`} className="btn btn-outline-secondary me-2">
@@ -271,6 +286,10 @@ function ProductDetail() {
           </div>
         )}
       </div>
+    </div>
+    {/* 아래쪽: 시세 · 비슷한 상품 */}
+    <MarketPrice productId={product.id} />
+    <SimilarProducts productId={product.id} />
     </div>
   )
 }

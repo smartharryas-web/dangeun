@@ -1,33 +1,28 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
-import { api, imageSrc } from '../api.js'
+import { api, urlsToFiles } from '../api.js'
+import ProductForm, { productToForm, checkForm, toFormData } from '../components/ProductForm.jsx'
 
 // 상품 고치기 화면 (/product/:id/edit)
-// 원래 내용을 받아 칸에 채워 두고, 저장하면 상세로 돌아간다
-// 사진은 새로 고를 때만 바뀐다 (안 고르면 원래 사진 그대로)
+// 원래 내용 · 사진을 받아 칸에 채워 두고(입력 칸은 올리기 화면과 같은 ProductForm), 저장하면 상세로 돌아간다
 function EditProduct() {
   const { id } = useParams()
   const { user, authApi } = useAuth()
   const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
-  const [title, setTitle] = useState('')
-  const [price, setPrice] = useState('')
-  const [description, setDescription] = useState('')
-  const [location, setLocation] = useState('')
-  const [image, setImage] = useState(null)
+  const [values, setValues] = useState(null)
+  const [images, setImages] = useState([])
 
-  // 원래 상품 내용 불러와서 칸에 채우기
+  // 원래 상품 내용 불러와서 칸에 채우기 (사진은 파일로 바꿔 둬야 순서 바꾸기 · 빼기가 올리기 화면과 똑같이 됨)
   useEffect(() => {
     async function load() {
       try {
         const data = await api(`/api/products/${id}`)
         setProduct(data)
-        setTitle(data.title)
-        setPrice(data.price)
-        setDescription(data.description)
-        setLocation(data.location)
+        setValues(productToForm(data))
+        setImages(await urlsToFiles(data.images))
       } catch (e) {
         setErrorMessage(e.status === 404 ? '없는 상품입니다.' : e.message)
       }
@@ -35,21 +30,19 @@ function EditProduct() {
     load()
   }, [id])
 
+  function handleChange(name, value) {
+    setValues({ ...values, [name]: value })
+  }
+
   async function handleSubmit() {
-    if (!title || !price || !description || !location) {
-      alert('빠진 칸이 있습니다. 상품명 · 가격 · 설명 · 거래 희망 장소를 모두 입력해 주세요.')
+    const problem = checkForm(values, images)
+    if (problem) {
+      alert(problem)
       return
     }
 
-    const form = new FormData()
-    form.append('title', title)
-    form.append('price', price)
-    form.append('description', description)
-    form.append('location', location)
-    if (image) form.append('images', image)
-
     try {
-      await authApi(`/api/products/${id}`, { method: 'PATCH', body: form })
+      await authApi(`/api/products/${id}`, { method: 'PATCH', body: toFormData(values, images) })
       navigate(`/product/${id}`)
     } catch (e) {
       alert(e.message)
@@ -57,33 +50,13 @@ function EditProduct() {
   }
 
   if (errorMessage) return <p>{errorMessage}</p>
-  if (!product || !user) return <p>불러오는 중...</p>
+  if (!product || !user || !values) return <p>불러오는 중...</p>
   if (user.id !== product.seller_id) return <p>내 상품만 고칠 수 있습니다.</p>
 
   return (
-    <div>
+    <div style={{ maxWidth: 720 }}>
       <h2 className="h4 mb-3">상품 고치기</h2>
-      <img
-        src={image ? URL.createObjectURL(image) : imageSrc(product.image_url)}
-        alt={product.title}
-        width="160"
-        height="160"
-        style={{ objectFit: 'cover' }}
-      />
-      <input
-        className="form-control my-3"
-        type="file"
-        accept="image/*"
-        onChange={e => setImage(e.target.files[0] || null)}
-      />
-      <label className="form-label" htmlFor="title">상품명</label>
-      <input className="form-control mb-3" id="title" value={title} onChange={e => setTitle(e.target.value)} />
-      <label className="form-label" htmlFor="price">가격</label>
-      <input className="form-control mb-3" id="price" type="number" value={price} onChange={e => setPrice(e.target.value)} />
-      <label className="form-label" htmlFor="description">설명</label>
-      <textarea className="form-control mb-3" id="description" rows="5" value={description} onChange={e => setDescription(e.target.value)} />
-      <label className="form-label" htmlFor="location">거래 희망 장소</label>
-      <input className="form-control mb-3" id="location" value={location} onChange={e => setLocation(e.target.value)} />
+      <ProductForm values={values} onChange={handleChange} images={images} setImages={setImages} />
       <button className="btn btn-outline-secondary" onClick={() => navigate(`/product/${id}`)}>취소</button>
       <button className="btn btn-primary ms-2" onClick={handleSubmit}>저장</button>
     </div>

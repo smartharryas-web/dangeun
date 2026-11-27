@@ -7,6 +7,8 @@ import Signup from './routes/Signup.jsx'
 import NewProduct from './routes/NewProduct.jsx'
 import Intro from './routes/Intro.jsx'
 import EditProduct from './routes/EditProduct.jsx'
+import Shop from './routes/Shop.jsx'
+import MyLikes from './routes/MyLikes.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function App() {
@@ -21,10 +23,12 @@ function App() {
           <Route path="/intro" element={<Intro />} />
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/shop/:userId" element={<Shop />} />
           {/* 로그인해야 하는 화면 */}
           <Route element={<RequireLogin />}>
             <Route path="/new" element={<NewProduct />} />
             <Route path="/product/:id/edit" element={<EditProduct />} />
+            <Route path="/me/likes" element={<MyLikes />} />
           </Route>
         </Routes>
       </main>

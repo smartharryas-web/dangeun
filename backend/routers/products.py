@@ -18,6 +18,11 @@ def get_product(product_id: int, db: SessionDep, user: OptionalUserDep):
 
   seller = db.scalar(select(User).where(User.id == product.seller_id))
 
+  # 조회수: 판매자 본인이 본 건 세지 않는다
+  if user is None or user.id != product.seller_id:
+    product.view_count += 1
+    db.commit()
+
   # 찜 수 · 내가 찜했는지까지 넣은 상세 모양 (ProdList.py의 to_detail을 같이 씀)
   return to_detail(product, seller.username, user)
 

@@ -14,7 +14,8 @@
 | --- | --- | --- |
 | users | id · username · password_hash | — (시작 저장소에 있음) |
 | refresh_tokens | 로그인 유지용 | users (시작 저장소에 있음) |
-| products | id · title · price · description · image_url · location · status · seller_id · created_at | seller_id → users |
+| products | id · title · price · description · image_url(대표 사진) · location · status · seller_id · created_at · category · condition · brand · tags · negotiable · can_meet · can_ship · shipping_included · has_warranty · view_count | seller_id → users |
+| product_images | id · product_id · url · position | product_id → products (상품이 지워지면 같이 지워짐) |
 | likes | id · user_id · product_id | user_id → users · product_id → products |
 | comments | id · product_id · user_id · content · created_at · updated_at | product_id → products · user_id → users (updated_at은 수정하기 전엔 비어 있음) |
 | temp_products | id · user_id · title · category · price · description · location · image_url | user_id → users (사용자마다 하나 — unique) |
@@ -29,7 +30,13 @@
 | 찜 토글 | 필수 | 심병규 | 끝 (목록 · 상세 하트, 로그인 안 했으면 로그인 화면으로) |
 | 판매 상태 바꾸기 (판매중 → 예약중 → 판매완료, 내 상품만) | 필수 | 심병규 | 끝 (상세에서 내 상품이면 고르는 칸) |
 | 문의 댓글 (상품 상세 이미지 아래 · 작성 · 내 댓글 수정 · 삭제) | 추가 | 이상록 | 하는 중 (목록 서버 주소 약속) |
-| 상품 수정 · 삭제 (상세의 수정 · 삭제 버튼, 내 상품만) | 추가 | 심병규 | 끝 (사진은 첫 장만 바꿈) |
+| 상품 수정 · 삭제 (상세의 수정 · 삭제 버튼, 내 상품만) | 추가 | 심병규 | 끝 |
+| 목록 다듬기: 동네 · n일 전 · 가격 쉼표 · 받는 중/빈 목록/에러 · 최근 본 상품 · 공유 | 추가 | 심병규 | 끝 |
+| 사진 여러 장 (최대 10장 저장 · 넘겨 보기 · 순서 바꾸기 · 끌어다 놓기) | 추가 | 심병규 | 끝 |
+| 상품 정보 칸: 카테고리 · 상품 상태 · 브랜드 · 태그 · 가격 제안 받기 · 직거래/택배 · 배송비 포함 · 보증서 있음 · 설명 글자 수 · 거래 안내 | 추가 | 심병규 | 끝 |
+| 검색 · 카테고리 메뉴 · 정렬 · 판매완료 빼기 | 추가 | 심병규 | 끝 |
+| 조회수 · 카테고리 경로 · 시세 · 비슷한 상품 | 추가 | 심병규 | 끝 |
+| 판매자 상점 · 내 찜 목록 | 추가 | 심병규 | 끝 |
 | 로고 화면 /intro (사이트를 / 로 새로 열 때 · 누르면 목록 · 시간대별 배경 사진) | 추가 | 심병규 | 끝 |
 
 추가 기능 예: 문의 댓글 · 판매자 페이지 · 10개씩 · 정렬 · 카테고리 · 팀이 생각한 것
@@ -52,6 +59,10 @@
 | DELETE | /api/products/{product_id} | 상품 지우기 (로그인 필요 · 내 상품만) | 심병규 |
 | POST | /api/products/{product_id}/like | 찜 켜고 끄기 (로그인 필요) | 심병규 |
 | PATCH | /api/products/{product_id}/status | 판매 상태 바꾸기 (로그인 필요 · 내 상품만) | 심병규 |
+| GET | /api/products/{product_id}/similar | 비슷한 상품 (같은 카테고리, 안 팔린 것 6개) | 심병규 |
+| GET | /api/products/{product_id}/market | 시세 (같은 카테고리 판매완료 평균 · 최저 · 최고) | 심병규 |
+| GET | /api/users/{user_id} | 판매자 상점 정보 | 심병규 |
+| GET | /api/users/me/likes | 내가 찜한 상품 (로그인 필요) | 심병규 |
 
 ## 주소 약속
 
@@ -59,6 +70,7 @@
 - 주소: GET /api/products (로그인 필요 없음)
 - 응답 200: 상품 목록 — [{"id": 2, "title": "갤럭시 s23", "price": 1230000, "image_url": "/uploads/galaxy.jpg", "location": "홍제역", "status": "판매중", "created_at": "2026-10-10T00:00:00"}, ...]
 - 화면: 상품 칸을 누르면 /product/{상품번호}로 이동 (상세 담당 요청)
+- 바꿈(심병규): 주소 뒤에 조건을 붙일 수 있음 — ?q=검색어(제목 · 설명 · 브랜드 · 태그) · category= · sort=latest|price_asc|price_desc|likes · exclude_sold=true · seller_id=, 응답에 category도
 - 바꿈(심병규): 상품마다 like_count(찜 수) · liked(지금 보는 사람이 찜했는지, 로그인 안 했으면 false)도 줌. 로그인했으면 토큰을 보내야 liked가 맞게 옴 (토큰이 틀리면 401)
 - 정한 사람: 심병규
 - 상태: 만듦(main) → 연결됨
@@ -128,6 +140,7 @@
 ### 상품 올리기
 - 주소: POST /api/products (로그인 필요)
 - 요청: 파일을 함께 보내는 양식(form-data) — images(사진, 1~10장, 저장은 첫 번째 한 장만) · title · price · description · location (category는 products에 칸이 없어 저장하지 않음)
+- 바꿈(심병규): 사진은 1~10장 전부 저장(첫 장이 대표), 칸 추가 — category · condition · brand · tags · negotiable · can_meet · can_ship · shipping_included · has_warranty (title 40자 · description 2000자까지). 상세 응답에 images(사진 주소 목록) · 위 칸 · view_count. 상세를 남이 볼 때마다 조회수 +1
 - 자동으로 채움: status("판매중") · seller_id(로그인한 사람) · created_at(올린 순간)
 - 응답 201: 올라간 상품 하나 (상품 상세와 같은 모양) — {"id": 4, "title": "자전거", "price": 50000, "description": "...", "image_url": "/uploads/products/1f3c...jpg", "location": "홍제역", "status": "판매중", "seller_id": 1, "seller_username": "asdf", "created_at": "..."}
 - 실패: 401 로그인 안 함 · 400 사진이 없거나 10장 넘음 · 422 빠진 값

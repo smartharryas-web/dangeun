@@ -29,6 +29,25 @@ class ProductOut(BaseModel):
   created_at: datetime
   like_count: int = 0
   liked: bool = False  # 지금 보는 사람이 찜했는지 (로그인 안 했으면 False)
+  category: str | None = None
+
+
+# 상품 올리기 · 고치기 양식 칸 (form-data). 사진(images)은 따로 받는다
+# 양식 칸이 많아서 하나씩 Form()으로 받지 않고 묶음 하나로 받는다 (처음 쓰는 방식: Annotated[ProductFormIn, Form()])
+class ProductFormIn(BaseModel):
+  title: str = Field(min_length=1, max_length=40)
+  price: int = Field(ge=0)
+  description: str = Field(min_length=1, max_length=2000)
+  location: str = Field(min_length=1)
+  category: str | None = None
+  condition: str | None = None
+  brand: str | None = None
+  tags: str | None = None  # 띄어쓰기로 구분, 5개까지, 하나에 9글자까지
+  negotiable: bool = False
+  can_meet: bool = True
+  can_ship: bool = False
+  shipping_included: bool = False
+  has_warranty: bool = False
 
 
 # 댓글 쓰기 요청 (내용은 비어 있으면 안 됨)
@@ -65,6 +84,34 @@ class ProductDetailOut(BaseModel):
   created_at: datetime
   like_count: int = 0
   liked: bool = False
+  images: list[str] = []
+  category: str | None = None
+  condition: str | None = None
+  brand: str | None = None
+  tags: list[str] = []
+  negotiable: bool = False
+  can_meet: bool = True
+  can_ship: bool = False
+  shipping_included: bool = False
+  has_warranty: bool = False
+  view_count: int = 0
+
+
+# 같은 카테고리에서 판매완료된 가격 모음 (시세)
+class MarketOut(BaseModel):
+  category: str | None
+  count: int
+  average: int | None
+  lowest: int | None
+  highest: int | None
+
+
+# 판매자 상점 정보
+class ShopOut(BaseModel):
+  id: int
+  username: str
+  selling_count: int
+  sold_count: int
 
 
 # 찜 누른 결과 (켜졌는지 · 지금 찜 수)

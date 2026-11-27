@@ -1,11 +1,22 @@
 // 서버에 요청 하나
 export const SERVER_URL = 'http://localhost:8000'
 
-// 사진 주소: 올린 사진(/uploads/products/)은 서버(8000)에 있어서 앞에 SERVER_URL을 붙인다
-// 시드 사진(/uploads/choco.jpg)은 화면 쪽 public에 있어서 그대로
+// 사진 주소: 올린 사진(/uploads/products/ · /uploads/temp/ 등 폴더 안)은 서버(8000)에 있어서 앞에 SERVER_URL을 붙인다
+// 시드 사진(/uploads/choco.jpg — 폴더 없이 바로)은 화면 쪽 public에 있어서 그대로
 export function imageSrc(path) {
-  if (path.startsWith('/uploads/products/')) return `${SERVER_URL}${path}`
+  if (/^\/uploads\/[^/]+\//.test(path)) return `${SERVER_URL}${path}`
   return path
+}
+
+// 사진 주소들 → 파일들 (임시저장 불러오기 · 상품 고치기에서 원래 사진을 다시 보낼 수 있게)
+export async function urlsToFiles(urls) {
+  const files = []
+  for (const [i, url] of urls.entries()) {
+    const blob = await (await fetch(imageSrc(url))).blob()
+    const ext = blob.type.split('/')[1] || 'jpg'
+    files.push(new File([blob], `image-${i}.${ext}`, { type: blob.type }))
+  }
+  return files
 }
 
 export async function api(path, options) {
