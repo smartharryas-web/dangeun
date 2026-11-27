@@ -1,0 +1,25 @@
+/* 앙코르 공통 디자인: 색 · 폰트를 여기 한 곳에만 둔다 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* 색 */
+  --color-bg: #F6EFE3;        /* 바탕 */
+  --color-surface: #EDE0C8;   /* 사진 자리 · 카드 면 */
+  --color-brown: #4B3621;     /* 보조: 로고 · 선 */
+  --color-text: #2E2116;      /* 글자 */
+  --color-text-sub: #7A6650;  /* 흐린 글자: 동네 · 시간 */
+  --color-point: #6B1F2E;     /* 포인트 버건디: 배지 · 버튼 면에만 */
+  --color-on-point: #F3E9D6;  /* 버건디 위 글자 */
+
+  /* 폰트 */
+  --font-ko: 'Pretendard', system-ui, sans-serif;  /* 한글 · 본문 */
+  --font-en: 'Inter', 'Pretendard', sans-serif;    /* 로고 · 가격 숫자 · 영문 */
+}
+
+/* 사이트 전체 기본값 */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ko);
+}
