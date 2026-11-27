@@ -93,29 +93,44 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;   /* 비율은 그대로, 화면을 꽉 채우고 넘치는 건 잘라냄 */
-  opacity: 0.3;        /* 30%만 보이게 → 나머지는 갈색 바탕이 비침 */
+  opacity: 0.1;        /* 10%만 보이게 → 나머지는 갈색 바탕 (간판 글자가 안 읽힐 만큼 어둡게) */
   filter: blur(2px);   /* 간판 · 디테일이 덜 보이게 살짝 뭉갬 */
 }
 
-/* 로고 글자: 영문이라 Inter (로고 · 영문은 Inter로 정해 둠) */
+/* 로고 (시안 1 SVG): 글자가 도형이라 폰트 설정은 필요 없음 */
 .intro-logo {
   position: relative;  /* 배경 사진보다 위에 그려지게 */
-  font-family: var(--font-en);
-  font-size: 4rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  /* 움직임 이름 · 걸리는 시간 · 속도 변화 · 기다렸다 시작 · 시작 전/끝난 뒤 모습 유지 */
-  animation: intro-rise 1.6s ease-out 0.3s both;
 }
 
-/* 로고가 통째로 서서히 떠오르는 움직임: 투명 + 살짝 아래 → 선명 + 제자리 */
-@keyframes intro-rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* 로고 크기: 가로를 정하면 세로는 viewBox 비율대로 따라옴 */
+.intro-logo svg {
+  display: block;
+  width: min(80vw, 400px);  /* 400px, 화면이 좁으면 화면 폭의 80%까지만 */
+  height: auto;
+  overflow: visible;        /* 모이기 전, 그림판 바깥에 있는 글자도 보이게 */
+}
+
+/* 글자 하나의 움직임 (시안 1 모이기)
+   ① 출발 위치(--o)에서 제자리로 미끄러져 옴: 2.6초, 처음엔 빠르고 끝에 아주 느려짐
+   ② 투명 → 선명: 1.1초, 가운데 글자(C · O)부터 바깥 글자(E) 순서로 (--fd)
+   --o · --fd는 Intro.jsx에서 글자마다 줌 */
+.intro-letter {
+  animation:
+    intro-gather 2.6s cubic-bezier(0.2, 0.65, 0.1, 1) 0.15s both,
+    intro-fade 1.1s ease-out var(--fd) both;
+}
+
+@keyframes intro-gather {
+  from { transform: translateX(var(--o)); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes intro-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 컴퓨터에서 '움직임 줄이기'를 켠 사람에겐 움직임 없이 바로 완성된 로고 */
+@media (prefers-reduced-motion: reduce) {
+  .intro-letter { animation: none; }
 }
