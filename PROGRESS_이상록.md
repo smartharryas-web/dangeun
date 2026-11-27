@@ -9,7 +9,46 @@
 3. 나누기 — products 칸 이름 제안(title · price · description · image_url · status · region · view_count · created_at · updated_at · seller_id)은 일단 넘어감, 표 목록부터
 4. 나누기 — 표 후보: products, likes(찜 저장용) — 학생이 말함
 
-## 내 글 수정 · 삭제
+## 댓글 (추가 기능: 문의 댓글)
+목표: 상품 상세의 이미지 아래에 댓글이 보인다
+지금: 시간이 보이는지 확인 후 댓글 수정 서버 주소 약속 정하기, DB 층을 올릴지 정하기
+
+1. 위치 — 상품 상세 화면, 이미지 아래
+2. 나누기 — 새 표 comments가 필요, 칸 후보: id · product_id · user_id · content · time (학생)
+3. 확인 — Claude가 origin에 댓글 작업이 없음을 확인, 최신 main(temp_products 리비전)을 받아 alembic upgrade head 실행
+4. 이름 — 표 comments, 칸 id · product_id · user_id · content · created_at (time은 products와 같은 created_at으로)
+5. 코드 — SPEC 데이터 모델에 comments 줄, models.py에 Comment, 리비전 7e85a25580b6(팀원 595e9294c54a 뒤에 이어짐), alembic upgrade head 적용 (Claude가 DB에서 표 확인)
+6. 순서 — DB 층은 올리지 않고 내 컴에서 먼저 시험 (학생: 일단 DB 만들고 내 컴에서 먼저 시험)
+7. 위치 — 이미지 바로 아래에 "댓글" 글자, 그 아래 빈 텍스트 박스 + 오른쪽에 제출 버튼, 댓글은 시간순으로 위에서 아래
+8. 순서 — 박스 안 흐린 글씨 "댓글을 남기려면 로그인이 필요합니다.", 로그인 안 됐으면 클릭 시 로그인 창으로, 됐으면 입력 후 제출하면 작성
+9. 코드 — 이미지와 댓글 영역을 왼쪽 div로 묶고, "댓글" 글자 · input(placeholder) · 제출 버튼 뼈대(동작 없음)
+10. 위치 — 상세는 지금처럼 로그인한 사람만 보게 두고(RequireLogin 그대로, 서버 로그인 필수도 그대로) 로그인 안내 문구는 뺌 (학생: 혹시 서버 에러가 날 수 있어서)
+11. 코드 — input의 placeholder 삭제
+12. 순서 — 가짜 댓글 없이 바로 진짜 댓글 목록으로(B) → 서버 주소부터 필요 (Claude가 서버에 댓글 주소가 없음을 미리 말함)
+13. 약속 — 댓글 목록 주소는 GET /api/products/{product_id}/comments (A: 상품 주소 아래에 붙이기, B: /api/comments?product_id= 중 A)
+14. 약속 — 응답은 시간순(오래된 것부터) 목록 [{id · content · created_at · user_id · username}], 없으면 [], 401 · 404, SPEC에 적음
+15. 코드 — schemas.py에 CommentOut, routers/products.py에 GET /{product_id}/comments(상품 없으면 404, 댓글마다 users에서 username 조회), SPEC 기능 · 주소 · 주소 약속 · 서버 import 확인(Claude)
+16. 위치 — 댓글 목록은 빈 텍스트박스 · 제출 버튼 아래, 시간순, 내 댓글이면 수정 · 삭제 (학생이 말함)
+17. 코드 — comments state + 목록을 서버에서 받는 useEffect, 댓글마다 "작성자 내용" 한 줄, 내 댓글(user.id === comment.user_id)이면 수정 · 삭제 버튼(동작 없음)
+18. 순서 — 확인용 댓글이 없어서 수정 · 삭제보다 작성(제출)을 먼저 (Claude 추천 선택지 중 학생이 고름)
+19. 약속 — POST /api/products/{product_id}/comments, 요청 {content}, 응답 201 댓글 하나(목록의 한 개와 같은 모양), 401 · 404 · 422(빈 내용), SPEC에 적음
+20. 코드 — schemas.py에 CommentCreate(min_length=1), routers/products.py에 POST 댓글 쓰기(상품 없으면 404, 로그인한 사람으로 저장), 서버 import 확인(Claude)
+21. 확인 — 학생이 /docs에서 댓글 쓰기가 잘 된다고 말함
+22. 코드 — commentText state, input을 value · onChange로 묶고, 제출 버튼 onClick으로 POST(JSON) 후 받은 댓글을 목록 끝에 붙이고 박스 비움, 빈 내용이면 요청하지 않음
+23. 순서 — 댓글 수정보다 삭제를 먼저
+24. 나누기 — 댓글 삭제는 상품 삭제처럼 "정말 삭제할까요?" 확인창을 먼저 띄움(B, 바로 삭제 A 중)
+25. 코드 — deleteCommentId state(지울 댓글 번호, 없으면 null), 댓글 삭제 버튼이 번호를 담아 확인창을 켬, 확인(동작 없음) · 취소(null로 끔)
+26. 약속 — DELETE /api/comments/{comment_id}, 내 댓글만, 응답 204, 실패 401 · 403(남의 댓글) · 404, SPEC에 적음
+27. 코드 — routers/comments.py 새 파일(DELETE, 없으면 404, 남의 댓글이면 403) + main.py에 include_router, 서버 import 확인(Claude)
+28. 코드 — 확인창 "확인"에 deleteComment 연결: DELETE 요청 후 목록에서 그 댓글을 빼고(filter) 확인창을 끔 (확인 말 없음: /docs 확인 여부)
+29. 위치 — 댓글 수정: 수정을 누르면 그 댓글 내용이 텍스트 박스로 옮겨 오고, 제출하면 댓글 오른쪽에 "수정됨" 표시 (학생이 말함). 삭제 화면 확인 말 없음
+30. 출처 — "수정됨"은 comments에 updated_at 칸(수정 전엔 비어 있음)을 더해서 기억 (A: updated_at / B: is_edited 중 A)
+31. 코드 — SPEC 데이터 모델 comments 줄에 updated_at, models.py Comment에 updated_at(None 가능), 리비전 80422b51d251(7e85a25580b6 뒤), alembic upgrade head 적용 (Claude가 DB에서 칸 확인)
+32. 다듬기 — 수정 안 한 댓글에도 오른쪽에 시간 표시 (학생이 말함, 형식은 정할 차례). DB 층을 올릴지 질문은 아직 답 없음
+33. 다듬기 — 시간 형식은 짧게 "11/27 14:30" (A: 짧게 / B: 연도까지 중 A)
+34. 코드 — formatTime 함수(Date로 월/일 시:분), 댓글 한 줄 오른쪽에 created_at을 그 모양으로 표시(수정됨 표시는 수정 기능 때)
+
+## 내 글 수정 · 삭제 (삭제는 서버 주소 단계에서 멈춤)
 목표: 상품 상세 화면에서 내 글이면 수정 · 삭제가 나온다
 지금: 확인을 누르면 서버에 삭제를 요청할 주소 정하기
 

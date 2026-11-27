@@ -2,12 +2,25 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 
+// 서버가 준 시간 글자(2026-11-27T14:30:00)를 "11/27 14:30" 모양으로 바꾼다
+function formatTime(text) {
+  const date = new Date(text)
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const hour = String(date.getHours()).padStart(2, '0')
+  const minute = String(date.getMinutes()).padStart(2, '0')
+  return `${month}/${day} ${hour}:${minute}`
+}
+
 function ProductDetail() {
   const { id } = useParams()
   const { user, authApi } = useAuth()
   const [product, setProduct] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
+  const [comments, setComments] = useState([])
+  const [commentText, setCommentText] = useState('')
+  const [deleteCommentId, setDeleteCommentId] = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -21,22 +34,96 @@ function ProductDetail() {
     load()
   }, [id])
 
+  useEffect(() => {
+    async function loadComments() {
+      try {
+        setComments(await authApi(`/api/products/${id}/comments`, {}))
+      } catch (e) {
+        // 없는 상품 등의 에러는 위에서 이미 안내하므로 여기서는 넘어간다
+      }
+    }
+    loadComments()
+  }, [id])
+
   if (errorMessage) return <p>{errorMessage}</p>
 
   if (!product) return <p>불러오는 중...</p>
 
   const isMine = user && user.id === product.seller_id
 
+  async function submitComment() {
+    if (commentText === '') return
+    const comment = await authApi(`/api/products/${id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: commentText }),
+    })
+    setComments([...comments, comment])
+    setCommentText('')
+  }
+
+  async function deleteComment() {
+    await authApi(`/api/comments/${deleteCommentId}`, { method: 'DELETE' })
+    setComments(comments.filter((comment) => comment.id !== deleteCommentId))
+    setDeleteCommentId(null)
+  }
+
   return (
     <div className="d-flex gap-4">
-      <img
-        className="flex-shrink-0"
-        src={product.image_url}
-        alt={product.title}
-        width="512"
-        height="512"
-        style={{ objectFit: 'cover' }}
-      />
+      <div className="flex-shrink-0">
+        <img
+          src={product.image_url}
+          alt={product.title}
+          width="512"
+          height="512"
+          style={{ objectFit: 'cover' }}
+        />
+        <h5>댓글</h5>
+        <div className="d-flex gap-2">
+          <input
+            className="form-control"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+          />
+          <button className="btn btn-outline-secondary" onClick={submitComment}>
+            제출
+          </button>
+        </div>
+        {comments.map((comment) => (
+          <div key={comment.id}>
+            <strong>{comment.username}</strong> {comment.content}
+            <span className="ms-2">{formatTime(comment.created_at)}</span>
+            {user && user.id === comment.user_id && (
+              <>
+                <button className="btn btn-sm btn-outline-secondary ms-2">수정</button>
+                <button
+                  className="btn btn-sm btn-outline-danger ms-1"
+                  onClick={() => setDeleteCommentId(comment.id)}
+                >
+                  삭제
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+        {deleteCommentId !== null && (
+          <div className="modal d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-body">
+                  <p>정말 삭제할까요?</p>
+                  <button className="btn btn-outline-danger me-2" onClick={deleteComment}>
+                    확인
+                  </button>
+                  <button className="btn btn-outline-secondary" onClick={() => setDeleteCommentId(null)}>
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div>
         <h2>{product.title}</h2>
         <p>{product.price}원</p>

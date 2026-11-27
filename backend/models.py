@@ -42,6 +42,18 @@ class Like(Base):
   product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
 
 
+class Comment(Base):
+  __tablename__ = 'comments'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
+  user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+  content: Mapped[str]
+  created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+  # 수정하기 전에는 비어 있음(None)
+  updated_at: Mapped[datetime | None]
+
+
 class TempProduct(Base):
   __tablename__ = 'temp_products'
 
