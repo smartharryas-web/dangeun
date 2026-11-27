@@ -1,7 +1,7 @@
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from routers import auth, products, ProdList, tempMemory, newProduct
+from routers import auth, products, ProdList, comments, tempMemory, newProduct
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -17,6 +17,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(ProdList.router)
+app.include_router(comments.router)
 app.include_router(tempMemory.router)
 app.include_router(newProduct.router)
 
