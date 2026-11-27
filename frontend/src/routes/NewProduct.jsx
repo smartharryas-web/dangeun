@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { SERVER_URL } from '../api.js'
 
@@ -19,6 +20,7 @@ function NewProduct() {
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('')
   const { authApi } = useAuth()
+  const navigate = useNavigate()
 
   // 들어오면 임시저장이 있는지 보고, 있으면 불러올지 물어본다
   useEffect(() => {
@@ -77,6 +79,27 @@ function NewProduct() {
     }
   }
 
+  async function handleSubmit() {
+    if (images.length === 0 || !title || !price || !description || !location) {
+      alert('빠진 칸이 있습니다. 사진 · 상품명 · 가격 · 설명 · 거래 희망 장소를 모두 입력해 주세요.')
+      return
+    }
+
+    const form = new FormData()
+    form.append('title', title)
+    form.append('price', price)
+    form.append('description', description)
+    form.append('location', location)
+    images.forEach(image => form.append('images', image))
+
+    try {
+      await authApi('/api/products', { method: 'POST', body: form })
+      navigate('/')
+    } catch (e) {
+      alert(e.message)
+    }
+  }
+
   function handleImages(e) {
     const files = [...e.target.files]
     e.target.value = ''
@@ -116,6 +139,7 @@ function NewProduct() {
       <label className="form-label" htmlFor="location">거래 희망 장소</label>
       <input className="form-control mb-3" id="location" value={location} onChange={e => setLocation(e.target.value)} />
       <button className="btn btn-outline-secondary" onClick={handleTempSave}>임시저장</button>
+      <button className="btn btn-primary ms-2" onClick={handleSubmit}>등록하기</button>
     </div>
   )
 }
