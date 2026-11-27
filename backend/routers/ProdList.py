@@ -3,22 +3,60 @@ from pathlib import Path
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Form, File, UploadFile
 from sqlalchemy import select, delete
-from schemas import ProductOut, ProductDetailOut
-from deps import SessionDep, CurrentUserDep
-from models import Product, Comment, Like
+from schemas import ProductOut, ProductDetailOut, StatusUpdate
+from deps import SessionDep, CurrentUserDep, OptionalUserDep
+from models import Product, Comment, Like, User
 from routers.newProduct import UPLOAD_DIR
 
 # 상품 관련 주소 모음
 router = APIRouter(prefix='/api/products', tags=['products'])
 
 
+# 지금 보는 사람이 이 상품을 찜했는지 (로그인 안 했으면 False)
+def liked_by(product: Product, user: User | None):
+  return user is not None and any(like.user_id == user.id for like in product.likes)
+
+
+# 상품 → 상세 모양 (상세 · 고치기 · 상태 바꾸기가 같이 씀)
+def to_detail(product: Product, seller_username: str, user: User | None):
+  return ProductDetailOut(
+    id=product.id,
+    title=product.title,
+    price=product.price,
+    description=product.description,
+    image_url=product.image_url,
+    location=product.location,
+    status=product.status,
+    seller_id=product.seller_id,
+    seller_username=seller_username,
+    created_at=product.created_at,
+    like_count=len(product.likes),
+    liked=liked_by(product, user),
+  )
+
+
 # 상품 목록: 로그인 없이 누구나, 최신순(방금 올린 게 맨 위)
 @router.get('', response_model=list[ProductOut])
-def list_products(db: SessionDep):
-  return db.scalars(select(Product).order_by(Product.created_at.desc())).all()
+def list_products(db: SessionDep, user: OptionalUserDep):
+  products = db.scalars(select(Product).order_by(Product.created_at.desc())).all()
+
+  return [
+    ProductOut(
+      id=p.id,
+      title=p.title,
+      price=p.price,
+      image_url=p.image_url,
+      location=p.location,
+      status=p.status,
+      created_at=p.created_at,
+      like_count=len(p.likes),
+      liked=liked_by(p, user),
+    )
+    for p in products
+  ]
 
 
-# 내 상품 하나 꺼내기 (고치기 · 지우기가 같이 씀): 없으면 404, 남의 거면 403
+# 내 상품 하나 꺼내기 (고치기 · 지우기 · 상태 바꾸기가 같이 씀): 없으면 404, 남의 거면 403
 def get_my_product(product_id: int, db: SessionDep, user: CurrentUserDep):
   product = db.get(Product, product_id)
 
@@ -69,18 +107,17 @@ def update_product(
   product.location = location
   db.commit()
 
-  return ProductDetailOut(
-    id=product.id,
-    title=product.title,
-    price=product.price,
-    description=product.description,
-    image_url=product.image_url,
-    location=product.location,
-    status=product.status,
-    seller_id=product.seller_id,
-    seller_username=user.username,
-    created_at=product.created_at,
-  )
+  return to_detail(product, user.username, user)
+
+
+# 판매 상태 바꾸기: 판매중 · 예약중 · 판매완료 중 하나로 (내 상품만)
+@router.patch('/{product_id}/status', response_model=ProductDetailOut)
+def update_status(product_id: int, data: StatusUpdate, db: SessionDep, user: CurrentUserDep):
+  product = get_my_product(product_id, db, user)
+  product.status = data.status
+  db.commit()
+
+  return to_detail(product, user.username, user)
 
 
 # 상품 지우기: 댓글 · 찜이 상품 번호를 붙잡고 있어서 그것부터 지운다

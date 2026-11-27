@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { api, imageSrc } from '../api.js'
+import LikeButton from '../components/LikeButton.jsx'
+
+const STATUSES = ['판매중', '예약중', '판매완료']
 
 // 서버가 준 시간 글자(2026-11-27T14:30:00)를 "11/27 14:30" 모양으로 바꾼다
 function formatTime(text) {
@@ -15,7 +18,7 @@ function formatTime(text) {
 
 function ProductDetail() {
   const { id } = useParams()
-  const { user, authApi } = useAuth()
+  const { user, token, ready, authApi } = useAuth()
   const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
@@ -26,10 +29,11 @@ function ProductDetail() {
   const [editCommentId, setEditCommentId] = useState(null)
 
   useEffect(() => {
+    // 로그인 확인이 끝나면 받는다. 로그인했으면 토큰을 같이 보내서 "내가 찜했는지"까지 (Home과 같은 방식)
+    if (!ready) return
     async function load() {
       try {
-        // 로그인 없이 받는 주소라 api()로 (Home 상품 목록과 같은 방식)
-        setProduct(await api(`/api/products/${id}`))
+        setProduct(token ? await authApi(`/api/products/${id}`, {}) : await api(`/api/products/${id}`))
       } catch (e) {
         if (e.status === 404) setErrorMessage('없는 게시물입니다.')
         else if (e.status === 422) setErrorMessage('잘못된 경로입니다.')
@@ -38,7 +42,7 @@ function ProductDetail() {
       }
     }
     load()
-  }, [id])
+  }, [id, ready, token])
 
   useEffect(() => {
     async function loadComments() {
@@ -79,6 +83,19 @@ function ProductDetail() {
         setEditCommentId(null)
       }
       setCommentText('')
+    } catch (e) {
+      alert(e.message)
+    }
+  }
+
+  // 판매 상태 바꾸기 (내 상품만): 고르면 바로 서버에 저장하고 화면도 서버 결과로 바꾼다
+  async function changeStatus(status) {
+    try {
+      setProduct(await authApi(`/api/products/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      }))
     } catch (e) {
       alert(e.message)
     }
@@ -186,10 +203,31 @@ function ProductDetail() {
         )}
       </div>
       <div>
-        <h2>{product.title}</h2>
+        <div className="d-flex align-items-center gap-2">
+          <h2 className="mb-0">{product.title}</h2>
+          <LikeButton
+            productId={product.id}
+            liked={product.liked}
+            count={product.like_count}
+            onToggle={(data) => setProduct({ ...product, ...data })}
+          />
+        </div>
         <p>{product.price}원</p>
         <p>{product.description}</p>
-        <p>{product.status}</p>
+        {/* 판매 상태: 내 상품이면 고르는 칸, 아니면 글자만 */}
+        {isMine ? (
+          <select
+            className="form-select w-auto mb-3"
+            value={product.status}
+            onChange={(e) => changeStatus(e.target.value)}
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        ) : (
+          <p>{product.status}</p>
+        )}
         <p>{product.location}</p>
         <p>{isMine ? '내가 쓴 글' : `판매자: ${product.seller_username}`}</p>
         {isMine && (

@@ -51,3 +51,15 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: SessionD
   return user
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
+
+
+# 로그인 안 해도 되는 주소에서 "누가 보고 있는지" 알고 싶을 때 (예: 내가 찜했는지 표시)
+# 토큰이 없으면 None, 토큰이 있는데 틀리면 401 (그래야 화면이 새 토큰을 받아 다시 요청함)
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/auth/login', auto_error=False)
+
+def get_optional_user(token: Annotated[str | None, Depends(optional_oauth2_scheme)], db: SessionDep):
+  if token is None:
+    return None
+  return get_current_user(token, db)
+
+OptionalUserDep = Annotated[User | None, Depends(get_optional_user)]

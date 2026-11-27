@@ -1,15 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from schemas import ProductDetailOut, CommentOut, CommentCreate
-from deps import SessionDep, CurrentUserDep
+from deps import SessionDep, CurrentUserDep, OptionalUserDep
 from models import Product, User, Comment
 from sqlalchemy import select
+from routers.ProdList import to_detail
 
 router = APIRouter(prefix='/api/products', tags=['products'])
 
 
 # 상품 상세: 로그인 없이 누구나 (상품 목록처럼)
 @router.get('/{product_id}', response_model=ProductDetailOut)
-def get_product(product_id: int, db: SessionDep):
+def get_product(product_id: int, db: SessionDep, user: OptionalUserDep):
   product = db.scalar(select(Product).where(Product.id == product_id))
 
   if not product:
@@ -17,18 +18,8 @@ def get_product(product_id: int, db: SessionDep):
 
   seller = db.scalar(select(User).where(User.id == product.seller_id))
 
-  return ProductDetailOut(
-    id=product.id,
-    title=product.title,
-    price=product.price,
-    description=product.description,
-    image_url=product.image_url,
-    location=product.location,
-    status=product.status,
-    seller_id=product.seller_id,
-    seller_username=seller.username,
-    created_at=product.created_at,
-  )
+  # 찜 수 · 내가 찜했는지까지 넣은 상세 모양 (ProdList.py의 to_detail을 같이 씀)
+  return to_detail(product, seller.username, user)
 
 
 # 댓글 목록: 로그인 없이 누구나 (쓰기 · 고치기 · 지우기는 로그인 필요)

@@ -1,7 +1,7 @@
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from routers import auth, products, ProdList, comments, tempMemory, newProduct
+from routers import auth, products, ProdList, comments, tempMemory, newProduct, likes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -20,6 +20,7 @@ app.include_router(ProdList.router)
 app.include_router(comments.router)
 app.include_router(tempMemory.router)
 app.include_router(newProduct.router)
+app.include_router(likes.router)
 
 # 올린 사진을 /uploads 주소로 보여 준다
 UPLOAD_ROOT = Path(__file__).resolve().parent / 'uploads'

@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 
@@ -32,6 +32,9 @@ class Product(Base):
   status: Mapped[str] = mapped_column(default='판매중')
   seller_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
   created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+  # 이 상품에 달린 찜들 (DB 칸이 아니라 likes 표를 따라가는 길 — len()으로 찜 수를 센다)
+  likes: Mapped[list['Like']] = relationship()
 
 
 class Like(Base):

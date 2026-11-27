@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from pydantic import BaseModel, Field
 
 
@@ -26,6 +27,8 @@ class ProductOut(BaseModel):
   location: str
   status: str
   created_at: datetime
+  like_count: int = 0
+  liked: bool = False  # 지금 보는 사람이 찜했는지 (로그인 안 했으면 False)
 
 
 # 댓글 쓰기 요청 (내용은 비어 있으면 안 됨)
@@ -60,6 +63,19 @@ class ProductDetailOut(BaseModel):
   seller_id: int
   seller_username: str
   created_at: datetime
+  like_count: int = 0
+  liked: bool = False
+
+
+# 찜 누른 결과 (켜졌는지 · 지금 찜 수)
+class LikeOut(BaseModel):
+  liked: bool
+  like_count: int
+
+
+# 판매 상태 바꾸기 요청: 셋 중 하나만 (Literal = 이 글자들 말고는 422)
+class StatusUpdate(BaseModel):
+  status: Literal['판매중', '예약중', '판매완료']
 
 
 # 임시저장 (쓰다 만 내용이라 비어 있어도 됨)
