@@ -39,16 +39,6 @@ PRODUCTS = [
       'created_at': datetime(2026, 11, 27),
   },
   {
-      'title': '촉촉한 초코칩',
-      'price': 50000000,
-      'description': '제가 정말 아끼는 초코칩입니다. 여러분은 그 가치를 사고 계신 거예요. 감히 제가 아끼는 초코칩을 제값 주지 않고 가져가려고 하지 마세요.',
-      'image_url': 'https://picsum.photos/seed/cookie/512/512',
-      'location': '이촌동 파리크라상 앞',
-      'status': '판매완료',
-      'seller': 'asdf',
-      'created_at': datetime(2026, 11, 27),
-  },
-  {
       'title': '삼성 냉장고',
       'price': 95000000,
       'description': '냉장고 안에서 가끔 목소리가 들립니다. 아직 저와 대화가 통하지 않아서 판매합니다.',
