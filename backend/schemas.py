@@ -28,6 +28,26 @@ class ProductOut(BaseModel):
   created_at: datetime
 
 
+# 댓글 쓰기 요청 (내용은 비어 있으면 안 됨)
+class CommentCreate(BaseModel):
+  content: str = Field(min_length=1)
+
+
+# 댓글 수정 요청 (내용은 비어 있으면 안 됨)
+class CommentUpdate(BaseModel):
+  content: str = Field(min_length=1)
+
+
+# 댓글 하나 (쓴 사람 아이디 포함, updated_at은 수정하기 전엔 None)
+class CommentOut(BaseModel):
+  id: int
+  content: str
+  created_at: datetime
+  updated_at: datetime | None
+  user_id: int
+  username: str
+
+
 # 상품 상세 (목록 칸 + 설명 · 판매자)
 class ProductDetailOut(BaseModel):
   id: int

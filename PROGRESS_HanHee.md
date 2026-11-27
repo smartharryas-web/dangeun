@@ -102,3 +102,4 @@
   73. 다듬기 — 빠진 칸이 있는데 등록하기를 누르면 경고 팝업 (사진 · 상품명 · 가격 · 설명 · 거래 희망 장소가 모두 있어야 함)
   74. 코드 — handleSubmit 맨 앞에서 빠진 칸이 있으면 alert 경고 후 서버로 보내지 않음
   75. 확인 — 빠진 칸 경고 · 등록하면 메인에 보임 · DBeaver products 줄 확인됨(학생: 확인 됐어) → main에 합침
+  76. 충돌 — backend/main.py routers import 줄, 내 newProduct와 상록 comments 둘 다 살림 (모든 브랜치 합친 뒤 서버 import · 화면 빌드 통과 · 내 DB에 comments 리비전 적용)
