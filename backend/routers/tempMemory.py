@@ -40,8 +40,12 @@ def save_temp(
 
   temp = db.scalar(select(TempProduct).where(TempProduct.user_id == user.id))
 
+  # 이미 있으면 덮어쓴다: 예전 사진 파일과 예전 줄을 지우고, 아래에서 새로 만든다
   if temp:
-    raise HTTPException(status_code=409, detail='임시저장은 하나만 가능합니다.')
+    if temp.image_url:
+      (UPLOAD_DIR / Path(temp.image_url).name).unlink(missing_ok=True)
+    db.delete(temp)
+    db.flush()  # 사용자마다 하나(unique)라서, 새 줄을 넣기 전에 예전 줄부터 지운다
 
   # 사진은 첫 번째 한 장만 저장한다
   image_url = None

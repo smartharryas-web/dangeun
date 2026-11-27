@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router'
+import { useParams, Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { api, imageSrc } from '../api.js'
 
@@ -16,6 +16,7 @@ function formatTime(text) {
 function ProductDetail() {
   const { id } = useParams()
   const { user, authApi } = useAuth()
+  const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
@@ -80,6 +81,17 @@ function ProductDetail() {
       setCommentText('')
     } catch (e) {
       alert(e.message)
+    }
+  }
+
+  // 상품 지우기: 확인창에서 "확인"을 누르면 지우고 목록으로
+  async function deleteProduct() {
+    try {
+      await authApi(`/api/products/${id}`, { method: 'DELETE' })
+      navigate('/')
+    } catch (e) {
+      alert(e.message)
+      setShowConfirm(false)
     }
   }
 
@@ -196,7 +208,7 @@ function ProductDetail() {
               <div className="modal-content">
                 <div className="modal-body">
                   <p>정말 삭제할까요?</p>
-                  <button className="btn btn-outline-danger me-2">확인</button>
+                  <button className="btn btn-outline-danger me-2" onClick={deleteProduct}>확인</button>
                   <button className="btn btn-outline-secondary" onClick={() => setShowConfirm(false)}>
                     취소
                   </button>
