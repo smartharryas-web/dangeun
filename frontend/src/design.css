@@ -941,7 +941,7 @@ main > * {
 /* 로고 크기: 가로를 정하면 세로는 viewBox 비율대로 따라옴 */
 .intro-logo svg {
   display: block;
-  width: min(80vw, 400px);  /* 400px, 화면이 좁으면 화면 폭의 80%까지만 */
+  width: min(84vw, 640px);  /* 640px(크기 비교판 D), 화면이 좁으면 화면 폭의 84%까지만 */
   height: auto;
   overflow: visible;        /* 다가오기 전, 그림판 바깥에 있는 글자도 보이게 */
 }
