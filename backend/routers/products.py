@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas import ProductOut
+from schemas import ProductDetailOut
 from deps import SessionDep, CurrentUserDep
 from models import Product, User
 from sqlalchemy import select
@@ -7,7 +7,7 @@ from sqlalchemy import select
 router = APIRouter(prefix='/api/products', tags=['products'])
 
 
-@router.get('/{product_id}', response_model=ProductOut)
+@router.get('/{product_id}', response_model=ProductDetailOut)
 def get_product(product_id: int, db: SessionDep, user: CurrentUserDep):
   product = db.scalar(select(Product).where(Product.id == product_id))
 
@@ -16,7 +16,7 @@ def get_product(product_id: int, db: SessionDep, user: CurrentUserDep):
 
   seller = db.scalar(select(User).where(User.id == product.seller_id))
 
-  return ProductOut(
+  return ProductDetailOut(
     id=product.id,
     title=product.title,
     price=product.price,

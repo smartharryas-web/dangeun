@@ -54,3 +54,7 @@
 39. 코드 — try/catch로 404면 notFound를 true로 → "404 에러: 잘못된 경로입니다." 출력
 40. 다듬기 — 숫자가 아닌 경로는 "잘못된 경로입니다.", 숫자인데 없는 상품은 "없는 게시물입니다."(삭제된 게시물은 서버가 구분 못 해서 "없는"으로)
 41. 코드 — notFound를 errorMessage로 바꿈: 404면 "없는 게시물입니다.", 422(숫자 아님)면 "잘못된 경로입니다."
+42. 코드 — 상품 상세 화면 + 서버 주소를 sangrok에 커밋·push (커밋 이름: 상품 상세 화면과 상품 하나 가져오기 서버 주소 추가)
+43. 충돌 — main.py(팀원 ProdList + 내 products), 둘 다 살림
+44. 충돌 — schemas.py ProductOut 이름이 겹침(팀원: 목록용 / 나: 상세용) → 팀원 ProductOut은 그대로 두고 내 것을 ProductDetailOut으로 바꿈 (학생: 팀원거에 맞추자), products.py도 따라 바꿈
+45. 확인 — 합친 뒤 서버 import · 주소 2개(/api/products, /api/products/{product_id}) · vite build 통과(Claude가 확인)
