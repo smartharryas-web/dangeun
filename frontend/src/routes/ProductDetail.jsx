@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { api, imageSrc } from '../api.js'
 import LikeButton from '../components/LikeButton.jsx'
+import { formatPrice, timeAgo } from '../format.js'
+import { addRecent, removeRecent } from '../recent.js'
 
 const STATUSES = ['판매중', '예약중', '판매완료']
 
@@ -33,7 +35,9 @@ function ProductDetail() {
     if (!ready) return
     async function load() {
       try {
-        setProduct(token ? await authApi(`/api/products/${id}`, {}) : await api(`/api/products/${id}`))
+        const data = token ? await authApi(`/api/products/${id}`, {}) : await api(`/api/products/${id}`)
+        setProduct(data)
+        addRecent(data) // 최근 본 상품에 넣기 (이 브라우저에만 저장)
       } catch (e) {
         if (e.status === 404) setErrorMessage('없는 게시물입니다.')
         else if (e.status === 422) setErrorMessage('잘못된 경로입니다.')
@@ -105,6 +109,7 @@ function ProductDetail() {
   async function deleteProduct() {
     try {
       await authApi(`/api/products/${id}`, { method: 'DELETE' })
+      removeRecent(product.id)
       navigate('/')
     } catch (e) {
       alert(e.message)
@@ -211,9 +216,20 @@ function ProductDetail() {
             count={product.like_count}
             onToggle={(data) => setProduct({ ...product, ...data })}
           />
+          {/* 공유하기: 지금 주소를 복사 */}
+          <button
+            className="btn btn-sm border-0"
+            aria-label="링크 복사"
+            onClick={() => navigator.clipboard.writeText(window.location.href).then(() => alert('링크를 복사했어요.'))}
+          >
+            <i className="bi bi-share" />
+          </button>
         </div>
-        <p>{product.price}원</p>
-        <p>{product.description}</p>
+        <p className="small mb-2" style={{ color: 'var(--color-text-sub)' }}>
+          {product.location} · {timeAgo(product.created_at)}
+        </p>
+        <p className="product-price fs-4">{formatPrice(product.price)}</p>
+        <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
         {/* 판매 상태: 내 상품이면 고르는 칸, 아니면 글자만 */}
         {isMine ? (
           <select
@@ -228,7 +244,6 @@ function ProductDetail() {
         ) : (
           <p>{product.status}</p>
         )}
-        <p>{product.location}</p>
         <p>{isMine ? '내가 쓴 글' : `판매자: ${product.seller_username}`}</p>
         {isMine && (
           <div>

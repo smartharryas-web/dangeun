@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { imageSrc } from '../api.js'
+import { formatPrice, timeAgo } from '../format.js'
 import LikeButton from './LikeButton.jsx'
 
 // 판매 상태 → 딱지 색 이름표 (색은 design.css에)
@@ -16,10 +17,13 @@ function Product({ product, onLikeToggle }) {
   return (
     <div className="d-flex align-items-start mb-3">
       <Link to={`/product/${product.id}`} className="product d-flex gap-3 flex-grow-1">
-        <img src={imageSrc(product.image_url)} alt={product.title} width="100" height="100" />
+        <img src={imageSrc(product.image_url)} alt={product.title} width="100" height="100" style={{ objectFit: 'cover' }} />
         <div>
           <div className="product-title">{product.title}</div>
-          <div className="product-price">{product.price}원</div>
+          <div className="small" style={{ color: 'var(--color-text-sub)' }}>
+            {product.location} · {timeAgo(product.created_at)}
+          </div>
+          <div className="product-price">{formatPrice(product.price)}</div>
           <div>
             <span className={`product-status ${statusClass[product.status]}`}>{product.status}</span>
           </div>
