@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class UserOut(BaseModel):
@@ -14,3 +15,14 @@ class UserCreate(BaseModel):
 class Token(BaseModel):
   access_token: str
   token_type: str
+
+
+# 상품 목록에서 상품 하나 (description · seller_id는 목록에 안 씀)
+class ProductOut(BaseModel):
+  id: int
+  title: str
+  price: int
+  image_url: str
+  location: str
+  status: str
+  created_at: datetime
