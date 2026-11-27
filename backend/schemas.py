@@ -40,3 +40,13 @@ class ProductDetailOut(BaseModel):
   seller_id: int
   seller_username: str
   created_at: datetime
+
+
+# 임시저장 (쓰다 만 내용이라 비어 있어도 됨)
+class TempMemoryOut(BaseModel):
+  title: str | None
+  category: str | None
+  price: int | None
+  description: str | None
+  location: str | None
+  images: list[str]

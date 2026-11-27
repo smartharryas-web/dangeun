@@ -25,7 +25,7 @@
 
 ## 상품 올리기 + 사진
 목표: 글쓰기 화면에 이미지 올리는 칸 · 상품명 · 카테고리 선택 · 임시저장 버튼 · 등록하기 버튼이 있고, 올리면 상품이 저장된다 (끝나면 네비게이션 바도 직접 만듦)
-지금: 팀원 pull 대기 · 다음은 임시저장 서버 주소 만들기
+지금: GET /api/tempMemory(불러오기) 만들 차례
 
 1. 순서 — 역할 분담: 병규 목록 · 상록 상세 · 나 상품 올리기+사진, 찜과 판매 상태 바꾸기는 나중에 → SPEC.md 기능 표 담당에 적음
 2. 순서 — 완성 모습: 이미지 올리는 칸 · 상품명 칸 · 카테고리 선택 · 임시저장 버튼 · 등록하기 버튼, 다 끝나면 네비게이션 바도 직접 구현
@@ -72,3 +72,10 @@
   43. 코드 — models.py에 TempProduct 추가 · 리비전 create temp_products 만들고 alembic upgrade head 적용
   44. 확인 — DBeaver에서 temp_products 표가 보임
   45. 코드 — temp_products 모델 · 리비전 · SPEC · NewProduct 칸 추가를 harry에 커밋 · push 후 main에 합침
+  46. 순서 — 서버 주소 중 POST /api/tempMemory(임시저장하기)부터 만들기 (학생: 시간이 많이 없어서)
+  47. 나누기 — 임시저장 서버 코드는 새 파일 routers/tempMemory.py (학생: 새파일로, 이유 말 없음)
+  48. 코드 — routers/tempMemory.py에 POST /api/tempMemory (글자 칸만, 사진은 아직) · schemas.py에 TempMemoryOut · main.py에 라우터 등록
+  49. 출처 — 사진 파일 저장 위치는 backend/uploads
+  50. 코드 — tempMemory.py POST가 사진(images)을 받아 첫 번째 한 장을 backend/uploads/temp에 저장하고 image_url에 주소 저장 · main.py에 /uploads 주소로 사진 보여 주기 · .gitignore에 backend/uploads/
+  51. 확인 — /docs에서 사진 포함 POST /api/tempMemory가 됨(학생: 확인했어)
+  52. 코드 — POST 임시저장 서버(tempMemory.py · schemas.py · main.py CORS 포함 · .gitignore)를 harry에 커밋 · push 후 main에 합침
