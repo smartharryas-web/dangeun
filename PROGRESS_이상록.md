@@ -58,3 +58,5 @@
 43. 충돌 — main.py(팀원 ProdList + 내 products), 둘 다 살림
 44. 충돌 — schemas.py ProductOut 이름이 겹침(팀원: 목록용 / 나: 상세용) → 팀원 ProductOut은 그대로 두고 내 것을 ProductDetailOut으로 바꿈 (학생: 팀원거에 맞추자), products.py도 따라 바꿈
 45. 확인 — 합친 뒤 서버 import · 주소 2개(/api/products, /api/products/{product_id}) · vite build 통과(Claude가 확인)
+46. 코드 — 합치기 커밋을 sangrok에 push
+47. 이름 — 팀원 목록은 백엔드 ProdList.py, 프론트는 Home.jsx + Product.jsx임을 확인 / 이름 차이는 그냥 두기로
