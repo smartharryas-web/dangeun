@@ -40,6 +40,7 @@
 | POST | /api/tempMemory | 상품 올리기 임시저장하기 (로그인 필요) | 한희 |
 | GET | /api/tempMemory | 임시저장 불러오기 (로그인 필요) | 한희 |
 | DELETE | /api/tempMemory | 임시저장 지우기 (로그인 필요) | 한희 |
+| POST | /api/products | 상품 올리기 (로그인 필요) | 한희 |
 
 ## 주소 약속
 
@@ -79,3 +80,13 @@
 - 실패: 401 로그인 안 함 · 404 임시저장이 없음
 - 정한 사람: 한희(프론트 · 서버 둘 다 직접 만듦)
 - 상태: 약속
+
+### 상품 올리기
+- 주소: POST /api/products (로그인 필요)
+- 요청: 파일을 함께 보내는 양식(form-data) — images(사진, 1~10장, 저장은 첫 번째 한 장만) · title · price · description · location (category는 products에 칸이 없어 저장하지 않음)
+- 자동으로 채움: status("판매중") · seller_id(로그인한 사람) · created_at(올린 순간)
+- 응답 201: 올라간 상품 하나 (상품 상세와 같은 모양) — {"id": 4, "title": "자전거", "price": 50000, "description": "...", "image_url": "/uploads/products/1f3c...jpg", "location": "홍제역", "status": "판매중", "seller_id": 1, "seller_username": "asdf", "created_at": "..."}
+- 실패: 401 로그인 안 함 · 400 사진이 없거나 10장 넘음 · 422 빠진 값
+- 화면 부탁(병규 · 상록): 올린 사진의 image_url은 `/uploads/products/`로 시작하고 서버(8000번)에 있어요. `Product.jsx` · `ProductDetail.jsx`에서 이 주소는 앞에 `SERVER_URL`(api.js)을 붙여서 보여 주세요. 시드 사진(`/uploads/choco.jpg` 등)은 그대로예요.
+- 정한 사람: 한희(서버 · 등록 화면). 화면 부탁은 병규 · 상록과 정해야 함
+- 상태: 약속 → 서버 만듦(아직 main 아님)
