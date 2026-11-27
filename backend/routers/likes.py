@@ -3,6 +3,7 @@ from sqlalchemy import select
 from schemas import LikeOut
 from deps import SessionDep, CurrentUserDep
 from models import Product, Like
+from routers.notifications import notify
 
 router = APIRouter(prefix='/api/products', tags=['likes'])
 
@@ -21,6 +22,9 @@ def toggle_like(product_id: int, db: SessionDep, user: CurrentUserDep):
     db.delete(like)
   else:
     db.add(Like(user_id=user.id, product_id=product_id))
+    # 판매자에게 알림 (내 상품을 내가 찜한 건 빼고)
+    if product.seller_id != user.id:
+      notify(db, product.seller_id, f"{user.username}님이 '{product.title}'을 찜했어요.", f'/product/{product_id}')
   db.commit()
 
   # commit 뒤에 product.likes를 다시 읽어 와서 센다

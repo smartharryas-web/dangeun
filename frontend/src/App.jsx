@@ -9,6 +9,9 @@ import Intro from './routes/Intro.jsx'
 import EditProduct from './routes/EditProduct.jsx'
 import Shop from './routes/Shop.jsx'
 import MyLikes from './routes/MyLikes.jsx'
+import Notifications from './routes/Notifications.jsx'
+import Chats from './routes/Chats.jsx'
+import ChatRoom from './routes/ChatRoom.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function App() {
@@ -29,6 +32,9 @@ function App() {
             <Route path="/new" element={<NewProduct />} />
             <Route path="/product/:id/edit" element={<EditProduct />} />
             <Route path="/me/likes" element={<MyLikes />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/chats" element={<Chats />} />
+            <Route path="/chats/:roomId" element={<ChatRoom />} />
           </Route>
         </Routes>
       </main>

@@ -14,8 +14,15 @@
 | --- | --- | --- |
 | users | id · username · password_hash | — (시작 저장소에 있음) |
 | refresh_tokens | 로그인 유지용 | users (시작 저장소에 있음) |
-| products | id · title · price · description · image_url(대표 사진) · location · status · seller_id · created_at · category · condition · brand · tags · negotiable · can_meet · can_ship · shipping_included · has_warranty · view_count | seller_id → users |
+| products | id · title · price · description · image_url(대표 사진) · location · status · seller_id · created_at · category · condition · brand · tags · negotiable · can_meet · can_ship · shipping_included · has_warranty · view_count · buyer_id · bumped_at | seller_id · buyer_id → users |
 | product_images | id · product_id · url · position | product_id → products (상품이 지워지면 같이 지워짐) |
+| offers | id · product_id · buyer_id · price · status(대기/수락/거절) · created_at | product_id → products · buyer_id → users |
+| chat_rooms | id · product_id · buyer_id · seller_id · created_at (상품 하나에 구매자당 방 하나) | product_id → products · buyer_id · seller_id → users |
+| messages | id · room_id · sender_id · content · is_read · created_at | room_id → chat_rooms · sender_id → users |
+| notifications | id · user_id · message · link · is_read · created_at | user_id → users (받는 사람) |
+| reviews | id · product_id · reviewer_id · seller_id · rating(1~5) · content · created_at (상품 하나에 하나) | product_id → products · reviewer_id · seller_id → users |
+| follows | id · follower_id · seller_id | 둘 다 → users |
+| reports | id · product_id · reporter_id · reason · created_at | product_id → products · reporter_id → users |
 | likes | id · user_id · product_id | user_id → users · product_id → products |
 | comments | id · product_id · user_id · content · created_at · updated_at | product_id → products · user_id → users (updated_at은 수정하기 전엔 비어 있음) |
 | temp_products | id · user_id · title · category · price · description · location · image_url | user_id → users (사용자마다 하나 — unique) |
@@ -37,6 +44,12 @@
 | 검색 · 카테고리 메뉴 · 정렬 · 판매완료 빼기 | 추가 | 심병규 | 끝 |
 | 조회수 · 카테고리 경로 · 시세 · 비슷한 상품 | 추가 | 심병규 | 끝 |
 | 판매자 상점 · 내 찜 목록 | 추가 | 심병규 | 끝 |
+| 가격 제안 (판매가 70% 이상, 판매자 수락하면 예약중) | 추가 | 심병규 | 끝 |
+| 채팅 (상품마다 1:1, 3초마다 새 메시지 확인) | 추가 | 심병규 | 끝 |
+| 알림함 · 메뉴 줄 숫자 딱지 (찜 · 댓글 · 가격 제안 · 후기 · 팔로우 · 새 상품 · 거래 완료) | 추가 | 심병규 | 끝 |
+| 거래 후기 · 별점 (판매완료 때 고른 구매자만) | 추가 | 심병규 | 끝 |
+| 상점 팔로우 · 신고하기 · 끌어올리기(하루 한 번) | 추가 | 심병규 | 끝 |
+| 결제 · 안전결제 · 본인인증 · 실물 검수 · 택배 연동 · 앱 푸시 · AI 가격 추천 | 뺌 | | 외부 계약 · 비용 · 인력이 필요해서 |
 | 로고 화면 /intro (사이트를 / 로 새로 열 때 · 누르면 목록 · 시간대별 배경 사진) | 추가 | 심병규 | 끝 |
 
 추가 기능 예: 문의 댓글 · 판매자 페이지 · 10개씩 · 정렬 · 카테고리 · 팀이 생각한 것
@@ -63,6 +76,23 @@
 | GET | /api/products/{product_id}/market | 시세 (같은 카테고리 판매완료 평균 · 최저 · 최고) | 심병규 |
 | GET | /api/users/{user_id} | 판매자 상점 정보 | 심병규 |
 | GET | /api/users/me/likes | 내가 찜한 상품 (로그인 필요) | 심병규 |
+| GET | /api/users/me/badges | 안 읽은 알림 · 채팅 수 (로그인 필요) | 심병규 |
+| POST | /api/users/{user_id}/follow | 상점 팔로우 켜고 끄기 (로그인 필요) | 심병규 |
+| GET | /api/users/{user_id}/reviews | 판매자가 받은 후기 | 심병규 |
+| POST | /api/products/{product_id}/reviews | 거래 후기 쓰기 (구매자만) | 심병규 |
+| POST | /api/products/{product_id}/offers | 가격 제안 (로그인 필요) | 심병규 |
+| GET | /api/products/{product_id}/offers | 제안 목록 (판매자는 전부, 나머지는 내 것만) | 심병규 |
+| PATCH | /api/offers/{offer_id} | 제안 수락 · 거절 (판매자만) | 심병규 |
+| POST | /api/products/{product_id}/chat | 채팅방 열기 (없으면 만듦) | 심병규 |
+| GET | /api/products/{product_id}/buyers | 판매완료 때 고를 구매자 후보 (판매자만) | 심병규 |
+| GET | /api/chats | 내 채팅방 목록 | 심병규 |
+| GET | /api/chats/{room_id} | 채팅방 하나 | 심병규 |
+| GET | /api/chats/{room_id}/messages?after_id= | 새 메시지 받기 (받으면 읽음 처리) | 심병규 |
+| POST | /api/chats/{room_id}/messages | 메시지 보내기 | 심병규 |
+| GET | /api/notifications | 내 알림 50개 | 심병규 |
+| POST | /api/notifications/read-all | 알림 전부 읽음 | 심병규 |
+| POST | /api/products/{product_id}/bump | 끌어올리기 (내 상품, 24시간에 한 번) | 심병규 |
+| POST | /api/products/{product_id}/reports | 신고 (정해진 이유, 한 번만) | 심병규 |
 
 ## 주소 약속
 
@@ -178,6 +208,7 @@
 ### 판매 상태 바꾸기
 - 주소: PATCH /api/products/{product_id}/status (로그인 필요 · 내 상품만)
 - 요청: {"status": "예약중"} — 판매중 · 예약중 · 판매완료 중 하나
+- 바꿈(심병규): 판매완료일 때 buyer_id(이 상품으로 채팅한 사람)를 같이 보낼 수 있음 → 그 사람이 후기를 쓸 수 있고 거래 완료 알림이 감. 채팅 안 한 사람이면 400
 - 응답 200: 바뀐 상품 하나 (상품 상세와 같은 모양)
 - 실패: 401 로그인 안 함 · 403 남의 상품 · 404 없는 상품 · 422 셋 중 하나가 아님
 - 화면: 상세에서 내 상품이면 판매 상태 고르는 칸, 고르면 바로 저장

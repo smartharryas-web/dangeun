@@ -7,10 +7,12 @@ import ImageGallery from '../components/ImageGallery.jsx'
 import ProductInfo from '../components/ProductInfo.jsx'
 import MarketPrice from '../components/MarketPrice.jsx'
 import SimilarProducts from '../components/SimilarProducts.jsx'
+import OfferBox from '../components/OfferBox.jsx'
+import ReviewForm from '../components/ReviewForm.jsx'
+import ReportButton from '../components/ReportButton.jsx'
+import SellerControls from '../components/SellerControls.jsx'
 import { formatPrice, timeAgo } from '../format.js'
 import { addRecent, removeRecent } from '../recent.js'
-
-const STATUSES = ['판매중', '예약중', '판매완료']
 
 // 서버가 준 시간 글자(2026-11-27T14:30:00)를 "11/27 14:30" 모양으로 바꾼다
 function formatTime(text) {
@@ -33,6 +35,8 @@ function ProductDetail() {
   const [commentText, setCommentText] = useState('')
   const [deleteCommentId, setDeleteCommentId] = useState(null)
   const [editCommentId, setEditCommentId] = useState(null)
+  // 가격 제안 수락 · 후기 쓰기 뒤에 상품을 다시 받고 싶을 때 이 숫자를 올린다
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     // 로그인 확인이 끝나면 받는다. 로그인했으면 토큰을 같이 보내서 "내가 찜했는지"까지 (Home과 같은 방식)
@@ -50,7 +54,7 @@ function ProductDetail() {
       }
     }
     load()
-  }, [id, ready, token])
+  }, [id, ready, token, reloadKey])
 
   useEffect(() => {
     async function loadComments() {
@@ -96,14 +100,15 @@ function ProductDetail() {
     }
   }
 
-  // 판매 상태 바꾸기 (내 상품만): 고르면 바로 서버에 저장하고 화면도 서버 결과로 바꾼다
-  async function changeStatus(status) {
+  // 채팅하기: 이 상품 방을 열고(없으면 만들고) 그 방으로 간다
+  async function openChat() {
+    if (!user) {
+      navigate('/login')
+      return
+    }
     try {
-      setProduct(await authApi(`/api/products/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      }))
+      const room = await authApi(`/api/products/${id}/chat`, { method: 'POST' })
+      navigate(`/chats/${room.id}`)
     } catch (e) {
       alert(e.message)
     }
@@ -241,25 +246,30 @@ function ProductDetail() {
         <p className="product-price fs-4">{formatPrice(product.price)}</p>
         <ProductInfo product={product} />
         <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
-        {/* 판매 상태: 내 상품이면 고르는 칸, 아니면 글자만 */}
+        {/* 판매 상태: 내 상품이면 상태 바꾸기 · 끌어올리기, 아니면 상태 글자 + 채팅하기 */}
         {isMine ? (
-          <select
-            className="form-select w-auto mb-3"
-            value={product.status}
-            onChange={(e) => changeStatus(e.target.value)}
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
+          <SellerControls product={product} onChange={setProduct} />
         ) : (
-          <p>{product.status}</p>
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <span>{product.status}</span>
+            {product.status !== '판매완료' && (
+              <button className="btn btn-primary" onClick={openChat}>
+                <i className="bi bi-chat-dots" /> 채팅하기
+              </button>
+            )}
+          </div>
+        )}
+        <OfferBox product={product} isMine={isMine} onProductChange={() => setReloadKey(reloadKey + 1)} />
+        {/* 판매완료 때 판매자가 고른 구매자라면 후기 쓰기 */}
+        {user && product.status === '판매완료' && product.buyer_id === user.id && !product.has_review && (
+          <ReviewForm productId={product.id} onDone={() => setReloadKey(reloadKey + 1)} />
         )}
         {/* 판매자: 누르면 그 사람 상점 */}
         <p>
           {isMine ? '내가 쓴 글 · ' : '판매자: '}
           <Link to={`/shop/${product.seller_id}`}>{product.seller_username}님의 상점</Link>
         </p>
+        {!isMine && <ReportButton productId={product.id} />}
         {isMine && (
           <div>
             <Link to={`/product/${id}/edit`} className="btn btn-outline-secondary me-2">

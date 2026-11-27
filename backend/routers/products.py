@@ -4,6 +4,7 @@ from deps import SessionDep, CurrentUserDep, OptionalUserDep
 from models import Product, User, Comment
 from sqlalchemy import select
 from routers.ProdList import to_detail
+from routers.notifications import notify
 
 router = APIRouter(prefix='/api/products', tags=['products'])
 
@@ -63,6 +64,9 @@ def create_comment(product_id: int, data: CommentCreate, db: SessionDep, user: C
 
   comment = Comment(product_id=product_id, user_id=user.id, content=data.content)
   db.add(comment)
+  # 판매자에게 알림 (판매자가 자기 상품에 쓴 댓글은 빼고)
+  if product.seller_id != user.id:
+    notify(db, product.seller_id, f"{user.username}님이 '{product.title}'에 댓글을 남겼어요.", f'/product/{product_id}')
   db.commit()
 
   return CommentOut(

@@ -2,8 +2,10 @@ from fastapi import APIRouter, Form, File, UploadFile
 from typing import Annotated
 from schemas import ProductDetailOut, ProductFormIn
 from deps import SessionDep, CurrentUserDep
-from models import Product
+from sqlalchemy import select
+from models import Product, Follow
 from routers.ProdList import apply_form, save_images, to_detail
+from routers.notifications import notify
 
 router = APIRouter(prefix='/api/products', tags=['products'])
 
@@ -21,6 +23,11 @@ def create_product(
   apply_form(product, data)
   save_images(product, images)
   db.add(product)
+  db.flush()  # 상품 번호를 미리 받아 알림 주소에 쓴다
+
+  # 내 상점을 팔로우한 사람들에게 새 상품 알림
+  for follow in db.scalars(select(Follow).where(Follow.seller_id == user.id)).all():
+    notify(db, follow.follower_id, f"팔로우한 {user.username}님이 새 상품 '{product.title}'을 올렸어요.", f'/product/{product.id}')
   db.commit()
 
   return to_detail(product, user.username, user)

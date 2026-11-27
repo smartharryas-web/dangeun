@@ -21,7 +21,8 @@ function Product({ product, onLikeToggle }) {
         <div>
           <div className="product-title">{product.title}</div>
           <div className="small" style={{ color: 'var(--color-text-sub)' }}>
-            {product.location} · {timeAgo(product.created_at)}
+            {/* 끌어올렸으면 끌어올린 시간으로 */}
+            {product.location} · {product.bumped_at ? `끌올 ${timeAgo(product.bumped_at)}` : timeAgo(product.created_at)}
           </div>
           <div className="product-price">{formatPrice(product.price)}</div>
           <div>
